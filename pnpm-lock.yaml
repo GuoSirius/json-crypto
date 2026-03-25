@@ -63,6 +63,9 @@ importers:
       happy-dom:
         specifier: ^20.8.8
         version: 20.8.8
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       typescript:
         specifier: ~5.6.2
         version: 5.6.3
@@ -1023,6 +1026,11 @@ packages:
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
+
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   idb@8.0.3:
     resolution: {integrity: sha512-LtwtVyVYO5BqRvcsKuB2iUMnHwPVByPCXFXOpuU96IZPPoPN6xjOGxZQ74pgSVVLQWtUOYgyeL4GE98BY5D3wg==}
@@ -2431,6 +2439,8 @@ snapshots:
   he@1.2.0: {}
 
   hookable@5.5.3: {}
+
+  husky@9.1.7: {}
 
   idb@8.0.3: {}
 

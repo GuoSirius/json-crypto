@@ -1,0 +1,83 @@
+version: '3.8'
+
+# 使用阿里云镜像源，确保国内可访问
+x-image-base: &image-base registry.cn-hangzhou.aliyuncs.com/library
+
+services:
+  # ==================== 生产模式 ====================
+  # 用途：生产环境部署
+  # 命令：docker-compose up -d
+  # 访问：http://localhost:8080
+  web:
+    <<: *web-service
+    profiles:
+      - production
+    ports:
+      - "8080:80"
+
+  # ==================== 开发模式 ====================
+  # 用途：本地开发调试（热更新）
+  # 命令：docker-compose --profile dev up
+  # 访问：http://localhost:5173
+  dev:
+    <<: *dev-service
+    profiles:
+      - dev
+
+  # ==================== 构建模式 ====================
+  # 用途：仅构建前端，不运行容器
+  # 命令：docker-compose --profile build up
+  build-only:
+    <<: *build-service
+    profiles:
+      - build
+
+# ================================================
+# 共享配置
+# ================================================
+x-web-service: &web-service
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: production
+  container_name: json-crypto-web
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 10s
+
+x-dev-service: &dev-service
+  image: *image-base/node:20-alpine
+  container_name: json-crypto-dev
+  working_dir: /app
+  command: pnpm dev --host 0.0.0.0
+  volumes:
+    - .:/app
+    - node_modules_dev:/app/node_modules
+  ports:
+    - "5173:5173"
+    - "5174:5174"
+  environment:
+    - NODE_ENV=development
+    - CHOKIDAR_USEPOLLING=true
+  # 使用阿里云 npm 镜像
+  npm_config_registry: https://registry.npmmirror.com
+
+x-build-service: &build-service
+  image: *image-base/node:20-alpine
+  container_name: json-crypto-build
+  working_dir: /app
+  command: sh -c "pnpm install --frozen-lockfile && pnpm run build"
+  volumes:
+    - ./dist:/app/dist
+  environment:
+    - NODE_ENV=production
+  npm_config_registry: https://registry.npmmirror.com
+
+# 命名卷，保留 node_modules
+volumes:
+  node_modules_dev:
+    driver: local

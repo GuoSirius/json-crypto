@@ -1,66 +1,125 @@
 # JSON Crypto - JSON 数据处理工具
 
-基于 Vite + Vue3 + Element Plus + UnoCSS + CryptoJS 构建的 JSON 数据处理工具，支持文件上传/粘贴、格式化、压缩、加密解密、批量处理和导出下载。
+基于 Vite + Vue 3 + TypeScript + Element Plus + UnoCSS + CryptoJS 构建的 JSON 数据处理工具，支持文件上传/粘贴、格式化、压缩、加密解密、批量处理和导出下载。
 
 ## 功能特性
 
+### 数据处理
 - **多种输入方式**：拖拽上传 JSON 文件或直接粘贴 JSON 文本
-- **JSON 处理**：格式化、压缩、加密（AES/DES/TripleDES/RC4/Rabbit/Base64）、解密
-- **文件管理**：左侧文件列表，支持 URL 传参指定文件（`?file=0` 或 `?file=xxx.json`）
+- **JSON 格式化**：美化 JSON 格式，支持带引号输出
+- **JSON 压缩**：去除空白字符，减小文件体积
+- **6 种加密算法**：AES、DES、TripleDES、RC4、Rabbit、Base64
+- **智能模式检测**：自动识别加密数据，切换加密/解密模式
+- **加引号选项**：支持为加密结果添加外层引号
+
+### 文件管理
+- **多文件支持**：同时上传和处理多个 JSON 文件
+- **文件去重**：基于文件名 + MD5 哈希自动去重
+- **文件筛选**：全部 / 待加密 / 待解密 / 未加密 / 未解密
+- **关键词搜索**：按文件名快速搜索定位
+- **URL 传参**：通过 `?file=0` 或 `?file=xxx.json` 直接打开指定文件
+- **处理页添加文件**：在处理页面支持继续添加更多文件
+
+### 批量操作
+- **批量加密/解密**：一键对所有筛选文件执行操作，自动检测每个文件的加密状态
+- **进度条显示**：批量处理时实时显示进度
+- **ZIP 打包下载**：将所有处理后文件打包为 ZIP 下载
+
+### 用户体验
+- **主题切换**：亮色 / 暗黑 / 跟随系统三种模式
+- **主题防闪烁**：页面加载前立即应用主题，避免白屏闪烁
 - **一键复制**：原数据和处理后数据均可复制到剪贴板
-- **批量处理**：一键批量加密/解密所有文件，带进度条显示
-- **下载导出**：单文件下载 / 多文件 ZIP 打包下载
 - **数据持久化**：IndexedDB 保存所有数据（含密钥和加密方式），页面刷新自动恢复
-- **安全返回**：点击返回弹出二次确认，确认后清除所有数据回到上传页
+- **安全返回**：点击返回弹出二次确认，确认后清除所有数据
+- **视图切换动画**：页面和 Tab 切换带有平滑过渡效果
 
 ## 技术栈
 
-- **前端框架**：Vue 3 + TypeScript
-- **构建工具**：Vite 5
-- **UI 组件库**：Element Plus
-- **样式方案**：UnoCSS
-- **加密库**：CryptoJS
-- **路由管理**：Vue Router
-- **状态管理**：Vue 3 Composition API
-- **文件处理**：JSZip + FileSaver
-- **数据持久化**：IndexedDB (idb)
+| 类别 | 技术 |
+|------|------|
+| 前端框架 | Vue 3 + TypeScript |
+| 构建工具 | Vite 5 |
+| UI 组件库 | Element Plus |
+| 样式方案 | UnoCSS (preset-uno + preset-attributify) |
+| 加密库 | CryptoJS |
+| 路由管理 | Vue Router (HTML5 History 模式) |
+| 状态管理 | Vue 3 Composition API (reactive) |
+| 数据持久化 | IndexedDB (idb) |
+| 文件处理 | JSZip + FileSaver |
+| 图标库 | Lucide Vue Next |
+| 测试框架 | Vitest + @vue/test-utils + happy-dom |
+| Git Hooks | husky |
 
 ## 项目结构
 
 ```
-src/
-├── main.ts                 # 入口，注册 Element Plus + UnoCSS + Router
-├── App.vue                 # 根组件，启动时检查 IndexedDB 自动路由
-├── style.css               # 全局深色主题样式
-├── types/index.ts          # TS 类型定义
-├── utils/
-│   ├── db.ts               # IndexedDB 持久化（idb 库）
-│   ├── crypto.ts           # CryptoJS 加密/解密封装
-│   ├── json.ts             # JSON 格式化/压缩工具
-│   └── download.ts         # 文件下载 + JSZip 打包
-├── stores/jsonStore.ts     # 全局状态 composable + IndexedDB 自动持久化
-├── router/index.ts         # 路由配置
-├── views/
-│   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
-│   └── ProcessView.vue     # 处理页（集成所有子组件）
-└── components/
-    ├── FileList.vue        # 左侧文件列表
-    ├── JsonEditor.vue      # JSON 编辑器（带复制按钮）
-    ├── ToolBar.vue         # 格式化/压缩/加密/解密按钮
-    ├── CryptoConfig.vue    # 算法选择 + 加密/解密模式 + 密钥输入
-    └── BatchAction.vue     # 批量处理 + 下载 + ZIP 打包
+json-crypto/
+├── .github/workflows/
+│   └── deploy.yml              # CI/CD 工作流（测试 + 双平台部署）
+├── scripts/
+│   ├── deploy-github.sh        # 手动部署 GitHub Pages
+│   ├── deploy-cloudflare.sh    # 手动部署 Cloudflare Pages
+│   └── build-and-preview.sh    # 本地构建 + 预览
+├── public/
+│   ├── 404.html                # GitHub Pages SPA 回退
+│   ├── _redirects              # Cloudflare Pages SPA 回退
+│   └── favicon.svg             # 网站图标
+├── src/
+│   ├── main.ts                 # 应用入口
+│   ├── App.vue                 # 根组件
+│   ├── style.css               # 全局主题样式（亮色/暗黑）
+│   ├── types/index.ts          # TypeScript 类型定义
+│   ├── utils/
+│   │   ├── crypto.ts           # 加密/解密封装（6 种算法）
+│   │   ├── json.ts             # JSON 格式化/压缩/验证
+│   │   ├── db.ts               # IndexedDB 持久化
+│   │   ├── download.ts         # 文件下载 + ZIP 打包
+│   │   └── uuid.ts             # UUID v4 生成
+│   ├── stores/
+│   │   └── jsonStore.ts        # 全局状态管理 + 自动持久化
+│   ├── composables/
+│   │   └── useTheme.ts         # 主题切换 composable
+│   ├── router/index.ts         # 路由配置 + 导航守卫
+│   ├── components/
+│   │   ├── FileList.vue        # 文件列表（筛选 + 搜索）
+│   │   ├── JsonEditor.vue      # JSON 编辑器（复制/下载/加密/解密）
+│   │   ├── ToolBar.vue         # 格式化/压缩按钮
+│   │   ├── CryptoConfig.vue    # 算法选择 + 模式切换 + 密钥输入
+│   │   ├── BatchAction.vue     # 批量处理 + ZIP 下载
+│   │   └── ThemeToggle.vue     # 主题切换按钮
+│   ├── views/
+│   │   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
+│   │   └── ProcessView.vue     # 处理页（集成所有功能）
+│   └── __tests__/              # 测试文件（12 个文件，264 个用例）
+├── docs/
+│   ├── deployment-guide.md     # 详细部署指南
+│   ├── test-analysis-report.md # 测试问题分析报告
+│   └── test-coverage-analysis.md # 测试覆盖率分析报告
+├── vite.config.ts              # Vite 配置（动态 base）
+├── uno.config.ts               # UnoCSS 配置
+└── package.json                # 项目依赖和脚本
 ```
 
 ## 快速开始
 
-### 使用 pnpm（推荐）
-
 ```bash
-# 安装依赖
+# 安装依赖（推荐使用 pnpm）
 pnpm install
 
 # 启动开发服务器
 pnpm run dev
+
+# 类型检查
+pnpm run type-check
+
+# 运行测试
+pnpm run test
+
+# 运行测试（监听模式）
+pnpm run test:watch
+
+# 生成测试覆盖率报告
+pnpm run test:coverage
 
 # 构建生产版本
 pnpm run build
@@ -69,46 +128,212 @@ pnpm run build
 pnpm run preview
 ```
 
-### 使用 npm
-
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 构建生产版本
-npm run build
-
-# 预览构建结果
-npm run preview
-```
-
 ## 使用说明
 
 ### 1. 上传数据
-- **文件上传**：拖拽 JSON 文件到上传区域，或点击选择文件
-- **文本粘贴**：在文本框中直接粘贴 JSON 数据
+- **文件上传**：拖拽 JSON 文件到上传区域，或点击选择文件（支持多选）
+- **文本粘贴**：切换到"文本粘贴"Tab，直接粘贴 JSON 数据
 - 点击"下一步"进入处理页面
 
 ### 2. 处理数据
-- **选择文件**：左侧文件列表中选择要处理的文件
-- **JSON 操作**：
-  - 格式化：美化 JSON 格式
-  - 压缩：去除空白字符
-  - 加密：选择算法（AES/DES/TripleDES/RC4/Rabbit/Base64）并输入密钥
-  - 解密：使用相同算法和密钥解密
-- **复制结果**：点击复制按钮复制原数据或处理后数据
+- **选择文件**：在左侧文件列表中选择要处理的文件
+- **加密/解密**：
+  - 选择算法（AES/DES/TripleDES/RC4/Rabbit/Base64）
+  - 选择模式（加密/解密，系统会自动检测建议模式）
+  - 输入密钥，点击"加密"或"解密"
+- **格式化/压缩**：对 JSON 数据进行格式化或压缩
+- **复制结果**：点击复制按钮将原数据或处理后数据复制到剪贴板
 
 ### 3. 批量操作
-- **批量处理**：点击批量操作按钮，对所有文件执行相同操作
-- **下载**：下载当前文件或打包所有文件为 ZIP
+- **筛选文件**：使用筛选下拉框选择要批量处理的文件范围
+- **批量处理**：点击"批量处理"，系统自动对每个文件检测加密状态并执行对应操作
+- **打包下载**：点击"打包下载 ZIP"将所有处理后文件打包下载
 
 ### 4. 数据持久化
-- 进入处理页后，所有数据自动保存到 IndexedDB
+- 进入处理页后，所有数据（含文件内容、密钥、加密方式）自动保存到 IndexedDB
 - 页面刷新后自动恢复上次状态
-- 点击返回按钮时，会提示确认并清除所有存储数据
+- 点击返回按钮时，二次确认后清除所有存储数据
+
+## 代码质量
+
+### Git Hooks
+项目配置了 husky pre-commit hook，每次提交前自动运行：
+- `vue-tsc -b`（TypeScript 类型检查）
+- `vitest run`（264 个单元测试）
+
+### 测试覆盖
+- **12 个测试文件**，**264 个测试用例**，全部通过
+- 覆盖全部工具函数、状态管理、组件和视图页面
+- 总体覆盖率约 **90%**
+- 测试执行时间约 **3-4 秒**
+
+详见 [测试覆盖率分析报告](docs/test-coverage-analysis.md) 和 [测试问题分析报告](docs/test-analysis-report.md)。
+
+## 部署
+
+### 自动部署（推荐）
+
+推送代码到 `main` 分支后，GitHub Actions 会自动：
+1. 运行类型检查和单元测试
+2. 测试通过后并行部署到 **GitHub Pages** 和 **Cloudflare Pages**
+
+#### 首次配置（必做）
+
+##### GitHub Pages 配置步骤
+
+1. **打开仓库设置**
+   - 进入 GitHub 仓库页面 → 点击 `Settings` 标签
+
+2. **找到 Pages 设置**
+   - 在左侧菜单中找到 `Pages`（通常在底部）
+
+3. **配置 Build 和部署**
+   - 在 "Build and deployment" 部分，Source 下拉菜单选择 `GitHub Actions`
+
+4. **保存**
+   - 无需其他配置，GitHub Actions 工作流会自动处理后续部署
+
+> **图示**：Settings → Pages → Source 选择 "GitHub Actions"
+
+##### Cloudflare Pages 配置步骤（可选）
+
+如果只需要 GitHub Pages，跳过此步骤。如果需要双平台部署：
+
+1. **获取 Cloudflare API Token**
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - 点击右上角头像 → "My Profile"
+   - 左侧菜单点击 "API Tokens"
+   - 点击 "Create Custom Token"
+   - 配置：
+     - **Token name**：`GitHub Deploy`（任意名称）
+     - **Permissions**：
+       - Account → Cloudflare Pages → Edit
+       - Zone → Cloudflare Pages → Edit
+     - **Account Resources**：选择你的账户
+   - 点击 "Create Token"
+   - **重要**：复制生成的 Token（只显示一次）
+
+2. **获取 Cloudflare Account ID**
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - 在首页右上角头像下方，找到你的账户名称
+   - 点击 → 复制 "Account ID"
+
+3. **添加到 GitHub Secrets**
+   - 进入 GitHub 仓库 → Settings → Secrets and variables → Actions
+   - 点击 "New repository secret"
+   - 添加两个 Secret：
+     - `CLOUDFLARE_API_TOKEN`：粘贴刚才复制的 API Token
+     - `CLOUDFLARE_ACCOUNT_ID`：粘贴账户 ID
+
+4. **创建 Cloudflare Pages 项目（首次）**
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages
+   - 点击 "Create a project"
+   - 选择 "Connect to Git"
+   - 选择你的 GitHub 仓库
+   - 在 "Production branch" 输入 `main`
+   - 在 "Build settings" 中：
+     - Build command: （留空）
+     - Build output directory: （留空，使用默认）
+   - 点击 "Save and Deploy"
+   - **后续**：GitHub Actions 会自动部署，不再需要手动操作
+
+> 配置完成后，每次推送代码到 `main` 分支，两个平台都会自动更新。
+
+#### 查看部署状态
+
+- **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
+- **Cloudflare Pages**：Cloudflare Dashboard → Pages → 点击项目查看部署日志
+
+---
+
+### 手动部署
+
+如果需要手动部署到本地环境或其他平台：
+
+#### 前置要求
+
+```bash
+# 安装 pnpm（如果未安装）
+npm install -g pnpm
+```
+
+#### 方式一：使用部署脚本
+
+```bash
+# 进入项目目录
+cd json-crypto
+
+# 构建并部署到 GitHub Pages（手动gh CLI部署）
+chmod +x scripts/deploy-github.sh
+./scripts/deploy-github.sh
+
+# 构建并部署到 Cloudflare Pages（需先安装 wrangler）
+pnpm add -D wrangler
+chmod +x scripts/deploy-cloudflare.sh
+./scripts/deploy-cloudflare.sh
+
+# 本地构建 + 预览（默认 base: /）
+chmod +x scripts/build-and-preview.sh
+./scripts/build-and-preview.sh
+
+# 本地构建 + 预览（GitHub Pages 模式，base: /<repo>/）
+./scripts/build-and-preview.sh github
+```
+
+#### 方式二：手动构建
+
+```bash
+# 安装依赖
+pnpm install
+
+# 构建生产版本（默认部署到根目录）
+pnpm run build
+# 构建产物在 dist/ 目录
+
+# 构建用于 GitHub Pages（子目录部署）
+VITE_BASE=/<repo>/ pnpm run build
+# 例如：VITE_BASE=/json-crypto/ pnpm run build
+```
+
+#### 方式三：Docker / Podman 部署
+
+```bash
+# 方式一：使用 docker-compose（推荐）
+# 生产部署
+docker-compose up -d
+
+# 开发模式（热更新）
+docker-compose --profile dev up -d
+
+# 仅构建
+docker-compose --profile build up
+
+# 方式二：手动构建
+# 构建镜像
+docker build -t json-crypto .
+
+# 运行容器
+docker run -d -p 8080:80 json-crypto
+
+# 访问 http://localhost:8080
+
+# Podman 替代方案
+podman-compose up -d
+```
+
+
+---
+
+### 部署到不同平台的注意事项
+
+| 平台 | base 配置 | 路由回退 | 首次配置 |
+|------|-----------|----------|----------|
+| GitHub Pages | `/<repo>/` | `404.html` | Settings → Pages → GitHub Actions |
+| Cloudflare Pages | `/` | `_redirects` | 需要 API Token + Account ID |
+| 本地预览 | `/` | 无需 | 无 |
+| Docker/Nginx | `/` | 需配置 nginx | 需配置 nginx.conf |
+
+详细部署指南请参阅 [docs/deployment-guide.md](docs/deployment-guide.md)。
 
 ## 开发指南
 
@@ -122,27 +347,23 @@ npm run preview
 
 项目使用 UnoCSS，可以通过以下方式自定义样式：
 
-- 修改 `uno.config.ts` 中的主题配置
+- 修改 `uno.config.ts` 中的主题颜色配置
 - 在组件中使用 UnoCSS 原子类
-- 在 `src/style.css` 中添加全局样式
+- 在 `src/style.css` 中添加/修改全局 CSS 变量
 
-## 部署
+### CI/CD 流程
 
-### 构建生产版本
-
-```bash
-pnpm run build
 ```
-
-构建结果位于 `dist/` 目录，可直接部署到任何静态文件服务器。
-
-### Docker 部署
-
-```dockerfile
-FROM nginx:alpine
-COPY dist/ /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+开发者提交代码
+  ↓
+pre-commit hook: type-check + test
+  ↓ (通过)
+git push origin main
+  ↓
+GitHub Actions 触发
+  ├─ CI Job: pnpm install → type-check → test
+  ├─ Deploy GitHub Pages: build (VITE_BASE=/<repo>/) → deploy
+  └─ Deploy Cloudflare Pages: build → wrangler deploy
 ```
 
 ## 许可证

@@ -1,0 +1,51 @@
+# 版本控制
+.git
+.gitignore
+
+# GitHub
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# 文档
+README.md
+docs/
+LICENSE
+
+# 构建产物（会被 Docker 复制）
+dist/
+coverage/
+
+# 依赖（使用 Docker 内的 node_modules）
+node_modules/
+
+# 测试
+__tests__/
+*.test.ts
+*.spec.ts
+vitest.config.ts
+
+# 开发工具
+.husky
+.eslintrc.*
+.prettierrc*
+tsconfig*.json
+!tsconfig.app.json
+!tsconfig.node.json
+
+# 脚本
+scripts/
+
+# 环境文件（可能包含密钥）
+.env
+.env.*
+!.env.example
+
+# 其他
+*.log
+*.lock
+pnpm-debug.log
