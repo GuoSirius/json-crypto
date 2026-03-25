@@ -1,25 +1,88 @@
 @import "element-plus/dist/index.css";
 
-@layer base {
-  :root {
-    --el-color-primary: #409EFF;
-    --el-bg-color: #1A1A24;
-    --el-bg-color-overlay: #252535;
-    --el-text-color-primary: #FFFFFF;
-    --el-text-color-regular: #B8B8C8;
-    --el-border-color: #3A3A4A;
-    --el-fill-color-blank: rgba(26, 26, 36, 0.8);
-    --el-fill-color-light: rgba(58, 58, 74, 0.6);
-    --el-fill-color-lighter: rgba(58, 58, 74, 0.4);
-    --el-fill-color-extra-light: rgba(58, 58, 74, 0.2);
-    --el-bg-color-page: #1A1A24;
-  }
+/* ========== 应用级 CSS 变量 - Light 默认（偏蓝色调） ========== */
+:root {
+  /* 应用主题色 */
+  --app-bg: #EEF2FF;
+  --app-bg-solid: #EEF2FF;
+  --app-card: #FFFFFF;
+  --app-border: #C7D2E8;
+  --app-text-primary: #1E293B;
+  --app-text-regular: #64748B;
+  --app-text-placeholder: #94A3B8;
+  --app-fill: rgba(37, 99, 235, 0.06);
+  --app-fill-strong: rgba(37, 99, 235, 0.12);
 
+  /* Element Plus 变量 - Light */
+  --el-color-primary: #2563EB;
+  --el-bg-color: var(--app-bg);
+  --el-bg-color-overlay: var(--app-card);
+  --el-bg-color-page: var(--app-bg);
+  --el-text-color-primary: var(--app-text-primary);
+  --el-text-color-regular: var(--app-text-regular);
+  --el-border-color: var(--app-border);
+  --el-border-color-light: var(--app-border);
+  --el-border-color-lighter: #E2E8F0;
+  --el-fill-color-blank: var(--app-card);
+  --el-fill-color-light: var(--app-fill);
+  --el-fill-color-lighter: rgba(37, 99, 235, 0.04);
+  --el-fill-color-extra-light: rgba(37, 99, 235, 0.02);
+  --el-mask-color: rgba(15, 23, 42, 0.5);
+
+  /* 弹框阴影 */
+  --app-shadow: 0 8px 32px rgba(37, 99, 235, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --app-shadow-lg: 0 20px 60px rgba(37, 99, 235, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  /* 滚动条 */
+  --app-scrollbar-track: rgba(203, 213, 232, 0.5);
+  --app-scrollbar-thumb: rgba(100, 116, 139, 0.4);
+  --app-scrollbar-thumb-hover: rgba(100, 116, 139, 0.6);
+}
+
+/* ========== Dark 覆盖 ========== */
+html.dark {
+  --app-bg: #1A1A24;
+  --app-bg-solid: #1A1A24;
+  --app-card: #252535;
+  --app-border: #3A3A4A;
+  --app-text-primary: #FFFFFF;
+  --app-text-regular: #B8B8C8;
+  --app-text-placeholder: #6B7280;
+  --app-fill: rgba(58, 58, 74, 0.4);
+  --app-fill-strong: rgba(58, 58, 74, 0.7);
+
+  /* Element Plus 变量 - Dark */
+  --el-color-primary: #409EFF;
+  --el-bg-color: var(--app-bg);
+  --el-bg-color-overlay: #252535;
+  --el-bg-color-page: var(--app-bg);
+  --el-text-color-primary: #FFFFFF;
+  --el-text-color-regular: #B8B8C8;
+  --el-border-color: #3A3A4A;
+  --el-border-color-light: #3A3A4A;
+  --el-border-color-lighter: #4A4A5A;
+  --el-fill-color-blank: rgba(26, 26, 36, 0.8);
+  --el-fill-color-light: rgba(58, 58, 74, 0.6);
+  --el-fill-color-lighter: rgba(58, 58, 74, 0.4);
+  --el-fill-color-extra-light: rgba(58, 58, 74, 0.2);
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+
+  --app-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  --app-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
+
+  --app-scrollbar-track: rgba(26, 26, 36, 0.5);
+  --app-scrollbar-thumb: rgba(100, 100, 120, 0.6);
+  --app-scrollbar-thumb-hover: rgba(120, 120, 140, 0.8);
+}
+
+/* ========== 全局基础样式 ========== */
+@layer base {
   body {
     margin: 0;
-    background-color: #1A1A24;
-    color: #FFFFFF;
+    background-color: var(--app-bg);
+    color: var(--app-text-primary);
     font-family: 'JetBrains Mono', 'Noto Sans SC', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   #app {
@@ -34,56 +97,139 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: rgba(26, 26, 36, 0.5);
+    background: var(--app-scrollbar-track);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(100, 100, 120, 0.6);
+    background: var(--app-scrollbar-thumb);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(120, 120, 140, 0.8);
+    background: var(--app-scrollbar-thumb-hover);
   }
 
   ::-webkit-scrollbar-corner {
-    background: rgba(26, 26, 36, 0.5);
+    background: var(--app-scrollbar-track);
   }
 
   /* Firefox 滚动条 */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 100, 120, 0.6) rgba(26, 26, 36, 0.5);
+    scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
   }
 }
 
-/* el-select 下拉框深色主题 - 更强制的覆盖 */
-:where(body) .el-select-dropdown.dark-select-dropdown {
-  background-color: rgba(26, 26, 36, 0.98) !important;
-  border-color: rgb(58, 58, 74) !important;
-  border: 1px solid rgb(58, 58, 74) !important;
-  padding: 6px 0 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item {
-  color: rgb(229, 231, 235) !important;
-  background-color: transparent !important;
-  padding: 8px 20px !important;
-}
-
-:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item:hover {
-  background-color: rgba(58, 58, 74, 0.8) !important;
-}
-
-:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item.is-selected {
-  background-color: rgb(59, 130, 246) !important;
-  color: white !important;
-}
-
-/* 尝试直接覆盖所有 el-select 下拉框 */
+/* ========== Element Plus 下拉框全局适配 ========== */
 .el-popper.is-light {
-  background-color: rgba(26, 26, 36, 0.98) !important;
-  border-color: rgb(58, 58, 74) !important;
+  background-color: var(--app-card) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: var(--app-shadow) !important;
+}
+
+.el-popper.is-light .el-popper__arrow::before {
+  background-color: var(--app-card) !important;
+  border-color: var(--app-border) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--app-text-primary) !important;
+}
+
+.el-select-dropdown__item:hover {
+  background-color: var(--app-fill) !important;
+}
+
+.el-select-dropdown__item.is-selected {
+  color: var(--el-color-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* ========== Element Plus Dialog 适配 ========== */
+.el-dialog {
+  background-color: var(--app-card) !important;
+  border: 1px solid var(--app-border) !important;
+  box-shadow: var(--app-shadow-lg) !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--app-border) !important;
+}
+
+.el-dialog__title {
+  color: var(--app-text-primary) !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: var(--app-text-regular) !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close:hover {
+  color: #ef4444 !important;
+}
+
+.el-dialog__footer {
+  border-top: 1px solid var(--app-border) !important;
+}
+
+/* ========== Element Plus MessageBox 适配 ========== */
+.el-message-box {
+  background-color: var(--app-card) !important;
+  border: 1px solid var(--app-border) !important;
+  box-shadow: var(--app-shadow-lg) !important;
+}
+
+.el-message-box__title {
+  color: var(--app-text-primary) !important;
+}
+
+.el-message-box__message {
+  color: var(--app-text-regular) !important;
+}
+
+/* ========== Element Plus Progress 适配 ========== */
+.el-progress-bar__outer {
+  background-color: var(--app-fill) !important;
+}
+
+/* ========== Element Plus Select / Input 适配 ========== */
+.el-input__wrapper {
+  background-color: var(--app-fill-color-blank) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: none !important;
+}
+
+.el-input__wrapper:hover {
+  border-color: var(--el-color-primary) !important;
+}
+
+.el-input__wrapper.is-focus {
+  border-color: var(--el-color-primary) !important;
+  box-shadow: 0 0 0 1px var(--el-color-primary) !important;
+}
+
+.el-input__inner {
+  color: var(--app-text-primary) !important;
+}
+
+.el-input__inner::placeholder {
+  color: var(--app-text-placeholder) !important;
+}
+
+/* ========== Element Plus Message 适配 ========== */
+.el-message {
+  background-color: var(--app-card) !important;
+  border-color: var(--app-border) !important;
+  box-shadow: var(--app-shadow) !important;
+}
+
+.el-message .el-message__content {
+  color: var(--app-text-primary) !important;
+}
+
+/* ========== option 元素暗黑模式修复 ========== */
+html.dark option {
+  background-color: #252535;
+  color: #E5E7EB;
 }

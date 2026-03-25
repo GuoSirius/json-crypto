@@ -5,9 +5,12 @@ import 'virtual:uno.css'
 import './style.css'
 import App from './App.vue'
 import router from './router'
-import { default as ElConfigProvider } from 'element-plus'
+import { useTheme } from './composables/useTheme'
 
 const app = createApp(App)
+
+// 在挂载前初始化主题（同步，防止闪烁）
+useTheme().init()
 
 // 全局错误处理
 app.config.errorHandler = (err, instance, info) => {
@@ -21,11 +24,6 @@ app.config.warnHandler = (msg, instance, trace) => {
 
 app.use(ElementPlus)
 app.use(router)
-
-// 全局配置 Element Plus
-app.provide('elConfig', {
-  zIndex: 3000,
-})
 
 // 等待路由守卫完成后挂载
 router.isReady().then(() => {

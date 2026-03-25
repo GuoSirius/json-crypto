@@ -5,15 +5,17 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, FileJson } from 'lucide-vue-next'
 import { useJsonStore } from '../stores/jsonStore'
 import { formatJson, compressJson, isValidJson } from '../utils/json'
-import { processCrypto, detectEncrypted } from '../utils/crypto'
+import { processCrypto, detectEncrypted, removeOuterQuotes, calculateMD5 } from '../utils/crypto'
 import { downloadFile, downloadAsZip } from '../utils/download'
 import type { CryptoMode, CryptoAlgorithm } from '../types'
+import { cleanData } from '../utils/crypto'
 
 import FileList from '../components/FileList.vue'
 import JsonEditor from '../components/JsonEditor.vue'
 import ToolBar from '../components/ToolBar.vue'
 import CryptoConfig from '../components/CryptoConfig.vue'
 import BatchAction from '../components/BatchAction.vue'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -26,8 +28,18 @@ const batchProgress = ref(0)
 
 const hasSource = computed(() => !!sourceText.value.trim())
 const hasProcessed = computed(() => !!processedText.value.trim())
+// 基础验证：直接检查是否是有效 JSON
 const hasSourceValidJson = computed(() => isValidJson(sourceText.value))
 const hasProcessedValidJson = computed(() => isValidJson(processedText.value))
+// 增强验证：去除引号后检查是否是有效 JSON（用于格式化和压缩按钮的禁用判断）
+const hasSourceValidJsonOrWithQuotes = computed(() => {
+  const cleanText = removeOuterQuotes(sourceText.value)
+  return isValidJson(cleanText)
+})
+const hasProcessedValidJsonOrWithQuotes = computed(() => {
+  const cleanText = removeOuterQuotes(processedText.value)
+  return isValidJson(cleanText)
+})
 
 onMounted(async () => {
   try {
@@ -138,18 +150,29 @@ function handleRefresh() {
 
 function handleFormat() {
   // 优先使用原始数据，如果没有则使用处理后数据
-  const inputText = hasSourceValidJson.value ? sourceText.value : processedText.value
+  // 使用支持引号的判断逻辑
+  const useSource = hasSourceValidJsonOrWithQuotes.value || hasProcessedValidJsonOrWithQuotes.value === false
+  const inputText = useSource ? sourceText.value : processedText.value
   if (!inputText) {
     ElMessage.error('没有可格式化的 JSON 数据')
     return
   }
-  if (!isValidJson(inputText)) {
+  // 先去除可能存在的外层引号
+  const cleanText = removeOuterQuotes(inputText)
+  if (!isValidJson(cleanText)) {
     ElMessage.error('当前数据不是有效的 JSON')
     return
   }
-  const result = formatJson(inputText)
+  let result = formatJson(cleanText)
+  // 如果原本有引号（去除引号前后不同）或者是加密后的数据（根据 wrapWithQuotes），则加上引号
+  const hadQuotes = cleanText !== inputText
+  // 如果 wrapWithQuotes 为 true，也需要加引号
+  const needQuotes = hadQuotes || store.state.cryptoConfig.wrapWithQuotes
+  if (needQuotes) {
+    result = `"${result}"`
+  }
   // 如果输入来自原数据，结果放到处理后；反之放回处理后
-  if (hasSourceValidJson.value) {
+  if (hasSourceValidJsonOrWithQuotes.value) {
     processedText.value = result
     saveResult(result)
   } else {
@@ -159,18 +182,29 @@ function handleFormat() {
 
 function handleCompress() {
   // 优先使用原始数据，如果没有则使用处理后数据
-  const inputText = hasSourceValidJson.value ? sourceText.value : processedText.value
+  // 使用支持引号的判断逻辑
+  const useSource = hasSourceValidJsonOrWithQuotes.value || hasProcessedValidJsonOrWithQuotes.value === false
+  const inputText = useSource ? sourceText.value : processedText.value
   if (!inputText) {
     ElMessage.error('没有可压缩的 JSON 数据')
     return
   }
-  if (!isValidJson(inputText)) {
+  // 先去除可能存在的外层引号
+  const cleanText = removeOuterQuotes(inputText)
+  if (!isValidJson(cleanText)) {
     ElMessage.error('当前数据不是有效的 JSON')
     return
   }
-  const result = compressJson(inputText)
+  let result = compressJson(cleanText)
+  // 如果原本有引号（去除引号前后不同）或者是加密后的数据（根据 wrapWithQuotes），则加上引号
+  const hadQuotes = cleanText !== inputText
+  // 如果 wrapWithQuotes 为 true，也需要加引号
+  const needQuotes = hadQuotes || store.state.cryptoConfig.wrapWithQuotes
+  if (needQuotes) {
+    result = `"${result}"`
+  }
   // 如果输入来自原数据，结果放到处理后；反之放回处理后
-  if (hasSourceValidJson.value) {
+  if (hasSourceValidJsonOrWithQuotes.value) {
     processedText.value = result
     saveResult(result)
   } else {
@@ -333,12 +367,147 @@ function handleAddFiles() {
     try {
       // 确保 store 已初始化以获取已有文件列表
       await store.init()
-      const addedCount = await store.addFiles(Array.from(files))
-      if (addedCount > 0) {
-        ElMessage.success(`已添加 ${addedCount} 个文件`)
-        loadCurrentFile()
-      } else {
-        ElMessage.info('所有文件已存在，无需重复添加')
+      
+      // 获取已有文件的唯一标识（文件名 + MD5）进行去重
+      const existingIdentities = new Set<string>()
+      for (const f of store.state.files) {
+        existingIdentities.add(`${f.name}-${f.md5}`)
+      }
+      
+      const fileArray = Array.from(files)
+      const fileResults: Array<{
+        file: File;
+        name: string;
+        identity: string;
+        isStoreDuplicate: boolean;
+        isSelectionDuplicate: boolean;
+      }> = []
+      
+      // 第一步：计算所有文件的标识并检查与store的重复
+      for (const file of fileArray) {
+        let content = await file.text()
+        // 清理引号包裹的内容（与store.addFiles保持一致）
+        const { cleaned: sanitizedContent } = cleanData(content)
+        content = sanitizedContent.replace(/\0/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim()
+        const md5 = calculateMD5(content)
+        const identity = `${file.name}-${md5}`
+        const isStoreDuplicate = existingIdentities.has(identity)
+        
+        fileResults.push({
+          file,
+          name: file.name,
+          identity,
+          isStoreDuplicate,
+          isSelectionDuplicate: false // 将在下一步确定
+        })
+      }
+      
+      // 第二步：检查本次选择中的重复（只检查非store重复的文件）
+      const selectedIdentities = new Map<string, number>() // 记录每个identity出现的次数
+      for (const result of fileResults) {
+        if (result.isStoreDuplicate) {
+          continue // 已经是store重复，跳过
+        }
+
+        const count = selectedIdentities.get(result.identity) || 0
+        if (count > 0) {
+          // 第2次及以后出现的都标记为重复
+          result.isSelectionDuplicate = true
+        }
+        selectedIdentities.set(result.identity, count + 1)
+      }
+      
+      // 统计结果
+      const newFiles = fileResults.filter(r => !r.isStoreDuplicate && !r.isSelectionDuplicate).map(r => r.file)
+      const storeDuplicates = fileResults.filter(r => r.isStoreDuplicate).map(r => r.name)
+
+      // 选择重复的文件:所有非store重复且重复次数>1的文件都要计入
+      const selectionDuplicates: string[] = []
+      for (const result of fileResults) {
+        if (!result.isStoreDuplicate) {
+          const count = selectedIdentities.get(result.identity) || 0
+          if (count > 1) {
+            // 这个文件被选择了多次,所有选择都计入重复
+            selectionDuplicates.push(result.name)
+          }
+        }
+      }
+      
+      // 显示重复信息
+      if (storeDuplicates.length > 0 || selectionDuplicates.length > 0) {
+        const messages: string[] = []
+        
+        // 对store重复进行去重统计（相同文件可能多次选择）
+        const uniqueStoreDuplicates = [...new Set(storeDuplicates)]
+        if (uniqueStoreDuplicates.length > 0) {
+          const totalStoreDupCount = storeDuplicates.length
+          const uniqueStoreDupCount = uniqueStoreDuplicates.length
+
+          if (uniqueStoreDupCount === 1) {
+            if (totalStoreDupCount === 1) {
+              messages.push(`文件 "${uniqueStoreDuplicates[0]}" 已在系统中存在`)
+            } else {
+              messages.push(`文件 "${uniqueStoreDuplicates[0]}" 已在系统中存在（选择了 ${totalStoreDupCount} 次）`)
+            }
+          } else if (uniqueStoreDupCount <= 5) {
+            // 显示所有重复文件名
+            messages.push(`${totalStoreDupCount} 个文件已在系统中存在：${uniqueStoreDuplicates.join('、')}`)
+          } else {
+            // 超过5个时显示前5个和总数
+            const previewNames = uniqueStoreDuplicates.slice(0, 5)
+            messages.push(`${totalStoreDupCount} 个文件已在系统中存在：${previewNames.join('、')}等`)
+          }
+        }
+
+        // 对选择重复进行去重统计
+        const uniqueSelectionDuplicates = [...new Set(selectionDuplicates)]
+        if (uniqueSelectionDuplicates.length > 0) {
+          const totalSelectionDupCount = selectionDuplicates.length
+          const uniqueSelectionDupCount = uniqueSelectionDuplicates.length
+
+          if (uniqueSelectionDupCount === 1) {
+            if (totalSelectionDupCount === 1) {
+              messages.push(`文件 "${uniqueSelectionDuplicates[0]}" 在本次选择中重复`)
+            } else {
+              messages.push(`文件 "${uniqueSelectionDuplicates[0]}" 在本次选择中重复（选择了 ${totalSelectionDupCount} 次）`)
+            }
+          } else if (uniqueSelectionDupCount <= 5) {
+            // 显示所有重复文件名
+            messages.push(`${totalSelectionDupCount} 个文件在本次选择中重复：${uniqueSelectionDuplicates.join('、')}`)
+          } else {
+            // 超过5个时显示前5个和总数
+            const previewNames = uniqueSelectionDuplicates.slice(0, 5)
+            messages.push(`${totalSelectionDupCount} 个文件在本次选择中重复：${previewNames.join('、')}等`)
+          }
+        }
+        
+        if (messages.length > 0) {
+          ElMessage.warning(`已过滤重复文件：${messages.join('；')}`)
+        }
+      }
+      
+      if (newFiles.length > 0) {
+        const {addedCount, duplicateCount: storeDuplicateCount} = await store.addFiles(newFiles)
+        if (addedCount > 0) {
+          const successMsg = `已成功添加 ${addedCount} 个文件`
+          if (newFiles.length === 1) {
+            ElMessage.success(`文件 "${newFiles[0].name}" 已成功添加`)
+          } else {
+            ElMessage.success(successMsg)
+          }
+          loadCurrentFile()
+        } else {
+          if (storeDuplicateCount > 0) {
+            ElMessage.info('所有文件已存在，无需重复添加')
+          } else {
+            ElMessage.info('没有文件被成功添加')
+          }
+        }
+      } else if (fileArray.length > 0 && newFiles.length === 0) {
+        // 所有文件都是重复的
+        if (storeDuplicates.length === 0 && selectionDuplicates.length === 0) {
+          ElMessage.info('没有文件被添加')
+        }
       }
     } catch (error) {
       ElMessage.error('文件上传失败')
@@ -370,40 +539,43 @@ async function handleBack() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-dark-bg flex flex-col">
+  <div class="min-h-screen bg-app-bg flex flex-col">
     <!-- Top Bar -->
-    <header class="fixed top-0 left-0 right-0 z-50 h-18 bg-gradient-to-r from-dark-card to-dark-bg border-b border-dark-border flex items-center justify-between px-6">
+    <header class="fixed top-0 left-0 right-0 z-50 h-18 bg-gradient-to-r from-app-card to-app-bg border-b border-app-border flex items-center justify-between px-6">
       <div class="flex items-center gap-4">
         <button
-          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-rose-400 bg-gradient-to-br from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700 hover:shadow-lg hover:shadow-rose-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-blue-300 bg-gradient-to-br from-blue-400 to-purple-600 text-white hover:from-blue-500 hover:to-purple-700 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer dark:border-blue-400 dark:from-blue-500 dark:to-purple-500"
           @click="handleBack"
         >
           <ArrowLeft :size="18" />
           返回
         </button>
-        <div class="h-6 w-px bg-dark-border"></div>
+        <div class="h-6 w-px bg-app-border"></div>
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
             <FileJson :size="18" class="text-white" />
           </div>
-          <span class="text-lg font-bold text-white" style="font-family: 'JetBrains Mono', monospace">JSON Crypto</span>
+          <span class="text-lg font-bold text-app-text-primary" style="font-family: 'JetBrains Mono', monospace">JSON Crypto</span>
         </div>
       </div>
-      
-      <CryptoConfig
-        :algorithm="store.state.cryptoConfig.algorithm"
-        :secret-key="store.state.cryptoConfig.key"
-        :mode="store.state.cryptoConfig.mode"
-        @update:algorithm="store.state.cryptoConfig.algorithm = $event"
-        @update:secret-key="store.state.cryptoConfig.key = $event"
-        @update:mode="store.state.cryptoConfig.mode = $event"
-      />
+
+      <div class="flex items-center gap-4">
+        <CryptoConfig
+          :algorithm="store.state.cryptoConfig.algorithm"
+          :secret-key="store.state.cryptoConfig.key"
+          :mode="store.state.cryptoConfig.mode"
+          @update:algorithm="store.state.cryptoConfig.algorithm = $event"
+          @update:secret-key="store.state.cryptoConfig.key = $event"
+          @update:mode="store.state.cryptoConfig.mode = $event"
+        />
+        <ThemeToggle />
+      </div>
     </header>
 
     <!-- Main Content -->
     <div class="flex-1 pt-18 flex">
       <!-- Sidebar -->
-      <aside v-if="store.isFileMode()" class="w-60 shrink-0 border-r border-dark-border bg-dark-card overflow-hidden">
+      <aside v-if="store.isFileMode()" class="w-60 shrink-0 border-r border-app-border bg-app-card overflow-hidden">
         <FileList
           :files="store.state.files"
           :active-index="store.state.activeIndex"
@@ -423,8 +595,8 @@ async function handleBack() {
           <ToolBar
             :has-source="hasSource"
             :has-processed="hasProcessed"
-            :has-source-valid-json="hasSourceValidJson"
-            :has-processed-valid-json="hasProcessedValidJson"
+            :has-source-valid-json="hasSourceValidJsonOrWithQuotes"
+            :has-processed-valid-json="hasProcessedValidJsonOrWithQuotes"
             :mode="store.state.cryptoConfig.mode"
             @format="handleFormat"
             @compress="handleCompress"

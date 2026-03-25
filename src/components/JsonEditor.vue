@@ -65,9 +65,9 @@ function handleInput(e: Event) {
 </script>
 
 <template>
-  <div class="flex flex-col h-full rounded-xl border border-dark-border bg-dark-bg overflow-hidden shadow-lg">
-    <div class="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-dark-card to-dark-bg border-b border-dark-border">
-      <span class="text-xs font-bold text-gray-300 uppercase tracking-wide">{{ label }}</span>
+  <div class="flex flex-col h-full rounded-xl border border-app-border bg-app-bg overflow-hidden shadow-lg">
+    <div class="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-app-card to-app-bg border-b border-app-border">
+      <span class="text-xs font-bold text-app-text-regular uppercase tracking-wide">{{ label }}</span>
       <div class="flex items-center gap-1.5">
         <button
           v-if="!readonly"
@@ -123,7 +123,7 @@ function handleInput(e: Event) {
     <textarea
       :value="modelValue"
       :readonly="readonly"
-      class="flex-1 w-full p-4 bg-transparent text-sm text-gray-200 font-mono resize-none focus:outline-none placeholder-gray-600 box-border"
+      class="flex-1 w-full p-4 bg-transparent text-sm text-app-text-primary font-mono resize-none focus:outline-none placeholder-app-text-placeholder box-border"
       placeholder="数据将显示在此处..."
       @input="handleInput"
     ></textarea>

@@ -59,8 +59,11 @@ export function useJsonStore() {
     await saveStoreData(dataToSave)
   }
 
-  async function addFiles(fileList: File[]): Promise<number> {
+  async function addFiles(fileList: File[]): Promise<{addedCount: number; duplicateCount: number; duplicateNames: string[]}> {
     let addedCount = 0
+    let duplicateCount = 0
+    const duplicateNames: string[] = []
+    
     // 获取已有文件信息，用于去重
     const existingFiles = new Map<string, string>()
     for (const f of state.files) {
@@ -82,6 +85,8 @@ export function useJsonStore() {
         // 检查是否已存在（文件名相同且 MD5 相同）
         const existingMD5 = existingFiles.get(file.name)
         if (existingMD5 === md5) {
+          duplicateCount++
+          duplicateNames.push(file.name)
           continue
         }
         
@@ -109,7 +114,7 @@ export function useJsonStore() {
         addedCount++
       }
     }
-    return addedCount
+    return {addedCount, duplicateCount, duplicateNames}
   }
 
   function readFileAsText(file: File): Promise<string> {

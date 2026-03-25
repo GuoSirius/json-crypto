@@ -34,7 +34,7 @@ const algorithms: { label: string; value: CryptoAlgorithm }[] = [
 <template>
   <div class="flex items-center gap-4">
     <div class="flex items-center gap-2 whitespace-nowrap">
-      <span class="text-sm font-semibold text-gray-400">算法</span>
+      <span class="text-sm font-semibold text-app-text-regular">算法</span>
       <el-select
         :model-value="algorithm"
         size="default"
@@ -50,10 +50,10 @@ const algorithms: { label: string; value: CryptoAlgorithm }[] = [
       </el-select>
     </div>
 
-    <div class="h-6 w-px bg-dark-border/60"></div>
+    <div class="h-6 w-px bg-app-border/60"></div>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm font-semibold text-gray-400">模式</span>
+      <span class="text-sm font-semibold text-app-text-regular">模式</span>
       <el-radio-group
         :model-value="mode"
         size="default"
@@ -65,21 +65,21 @@ const algorithms: { label: string; value: CryptoAlgorithm }[] = [
       </el-radio-group>
     </div>
 
-    <div class="h-6 w-px bg-dark-border/60"></div>
+    <div class="h-6 w-px bg-app-border/60"></div>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm font-semibold text-gray-400">密钥</span>
+      <span class="text-sm font-semibold text-app-text-regular">密钥</span>
       <div class="relative">
         <input
           :value="secretKey"
           :type="showKey ? 'text' : 'password'"
           placeholder="输入密钥..."
-          class="px-3 py-2.5 pr-10 w-52 bg-dark-bg/80 border-2 border-dark-border rounded-xl text-sm text-gray-200 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/30 transition-all placeholder-gray-600"
+          class="px-3 py-2.5 pr-10 w-52 bg-app-fill border-2 border-app-border rounded-xl text-sm text-app-text-primary focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all placeholder-app-text-placeholder"
           @input="updateKey"
         />
         <button
           type="button"
-          class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-dark-bg/90 border border-dark-border/60 rounded-lg text-gray-400 hover:text-blue-400 hover:border-blue-500/50 hover:bg-dark-bg transition-all cursor-pointer"
+          class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-app-fill border border-app-border/60 rounded-lg text-app-text-regular hover:text-primary hover:border-primary/50 hover:bg-app-fill-strong transition-all cursor-pointer"
           @click="showKey = !showKey"
         >
           <EyeOff v-if="showKey" :size="16" />
@@ -92,21 +92,23 @@ const algorithms: { label: string; value: CryptoAlgorithm }[] = [
 
 <style scoped>
 .mode-group :deep(.el-radio-button__inner) {
-  background-color: rgb(17, 24, 39, 0.8) !important;
-  border-color: rgb(51, 65, 85) !important;
-  color: rgb(156, 163, 175) !important;
+  background-color: var(--app-fill) !important;
+  border-color: var(--app-border) !important;
+  color: var(--app-text-regular) !important;
   box-shadow: none !important;
+  transition: all 0.3s ease;
 }
 
 .mode-group :deep(.el-radio-button__inner:hover) {
-  color: rgb(209, 213, 219) !important;
+  color: var(--app-text-primary) !important;
+  background-color: var(--app-fill-strong) !important;
 }
 
 .mode-group :deep(.el-radio-button.is-active .el-radio-button__inner) {
-  background-color: rgb(59, 130, 246) !important;
-  border-color: rgb(59, 130, 246) !important;
+  background-color: var(--el-color-primary) !important;
+  border-color: var(--el-color-primary) !important;
   color: white !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--el-color-primary) 30%, transparent) !important;
 }
 
 .mode-group :deep(.el-radio-button:first-child .el-radio-button__inner) {
