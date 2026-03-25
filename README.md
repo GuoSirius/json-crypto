@@ -243,6 +243,7 @@ pnpm run preview
 
 - **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
 - **Cloudflare Pages**：Cloudflare Dashboard → Pages → 点击项目查看部署日志
+- **Gitee Pages**：Gitee 仓库 → 管理 → Gitee Pages → 查看部署状态
 
 ---
 
@@ -271,6 +272,10 @@ chmod +x scripts/deploy-github.sh
 pnpm add -D wrangler
 chmod +x scripts/deploy-cloudflare.sh
 ./scripts/deploy-cloudflare.sh
+
+# 构建并部署到 Gitee Pages（自动创建 gh-pages 分支）
+chmod +x scripts/deploy-gitee.sh
+./scripts/deploy-gitee.sh
 
 # 本地构建 + 预览（默认 base: /）
 chmod +x scripts/build-and-preview.sh
@@ -329,6 +334,7 @@ podman-compose up -d
 | 平台 | base 配置 | 路由回退 | 首次配置 |
 |------|-----------|----------|----------|
 | GitHub Pages | `/<repo>/` | `404.html` | Settings → Pages → GitHub Actions |
+| Gitee Pages | `/` | 自动支持 | 管理 → Gitee Pages → 启动 |
 | Cloudflare Pages | `/` | `_redirects` | 需要 API Token + Account ID |
 | 本地预览 | `/` | 无需 | 无 |
 | Docker/Nginx | `/` | 需配置 nginx | 需配置 nginx.conf |

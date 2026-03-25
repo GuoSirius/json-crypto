@@ -198,6 +198,83 @@ chmod +x scripts/deploy-cloudflare.sh
 ./scripts/deploy-cloudflare.sh my-custom-name
 ```
 
+### 部署到 Gitee Pages
+
+Gitee Pages 是国内访问速度快的静态页面托管服务，适合国内用户使用。
+
+#### 方式一：使用部署脚本（推荐）
+
+```bash
+chmod +x scripts/deploy-gitee.sh
+./scripts/deploy-gitee.sh
+```
+
+脚本会自动：
+1. 安装依赖
+2. 运行测试
+3. 构建项目（base: /）
+4. 创建 gh-pages 分支
+5. 推送构建产物到 Gitee
+
+#### 方式二：手动部署
+
+```bash
+# 1. 安装依赖并构建
+pnpm install --frozen-lockfile
+pnpm run build
+
+# 2. 创建 gh-pages 分支
+git checkout --orphan gh-pages
+
+# 3. 删除不需要的文件
+git rm -rf .
+
+# 4. 复制构建产物
+cp -r dist/* .
+
+# 5. 提交并推送
+git add .
+git commit -m "deploy: Gitee Pages"
+git push origin gh-pages --force
+
+# 6. 切回 main 分支
+git checkout main
+```
+
+#### Gitee Pages 首次配置（必做）
+
+1. **进入仓库页面**
+   - 访问你的 Gitee 仓库，如：`https://gitee.com/你的用户名/json-crypto`
+
+2. **找到 Pages 设置**
+   - 点击菜单「管理」
+
+3. **启用 Gitee Pages**
+   - 在左侧找到「Gitee Pages」
+   - 选择分支：`gh-pages`
+   - 点击「启动」
+   - 等待部署完成
+
+4. **获取访问地址**
+   - 部署成功后，页面会显示访问地址
+   - 格式：`https://你的用户名.gitee.io/仓库名/`
+
+> **注意**：
+> - 首次部署可能需要 1-5 分钟
+> - 每次更新代码后，需要重新运行部署脚本
+> - Gitee Pages 免费版需要手动刷新更新
+
+#### 自动部署（Gitee + 阿里云云效）
+
+如果你希望 Gitee 也能自动部署，可以使用阿里云云效：
+
+1. 注册/登录 [云效](https://flow.aliyun.com/)
+2. 创建新流水线 → 选择「构建静态网站」
+3. 配置 Gitee 仓库和分支
+4. 设置构建命令：`pnpm install && pnpm run build`
+5. 设置部署分支：`gh-pages`
+6. 启用流水线
+
 ---
 
 ## 构建配置说明
@@ -218,6 +295,7 @@ export default defineConfig({
 | 本地开发 | `/` | 默认值，无需设置 |
 | Cloudflare Pages | `/` | 根路径部署 |
 | GitHub Pages | `/<repo-name>/` | 如 `json-crypto` → `/json-crypto/` |
+| Gitee Pages | `/` | 根路径部署 |
 | 自定义子路径 | `/<path>/` | 如 `/tools/json-crypto/` |
 
 ### 使用示例
