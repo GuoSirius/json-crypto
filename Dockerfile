@@ -1,5 +1,5 @@
 # 阶段1: 构建前端
-FROM registry.cn-hangzhou.aliyuncs.com/library/node:24-alpine AS builder
+FROM node:24-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -21,7 +21,7 @@ COPY . .
 RUN pnpm run build
 
 # 阶段2: 运行服务
-FROM registry.cn-hangzhou.aliyuncs.com/library/nginx:alpine
+FROM nginx:alpine
 
 # 复制构建产物
 COPY --from=builder /app/dist /usr/share/nginx/html
