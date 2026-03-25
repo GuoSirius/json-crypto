@@ -1,5 +1,5 @@
 # 阶段1: 构建前端
-FROM registry.cn-hangzhou.aliyuncs.com/library/node:20-alpine AS builder
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:24-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
