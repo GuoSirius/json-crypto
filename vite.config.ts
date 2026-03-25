@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
@@ -16,5 +17,13 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 600,
+  },
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./src/__tests__/setup.ts'],
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+    globals: true,
   },
 })
