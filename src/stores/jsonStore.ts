@@ -8,16 +8,18 @@ const defaultCryptoConfig: CryptoConfig = {
   algorithm: 'AES',
   key: 'public/elab2024.png',
   mode: 'encrypt',
+  wrapWithQuotes: false,
 }
 
-export type FileFilter = 'all' | 'pending-encrypt' | 'pending-decrypt'
+export type FileFilter = 'all' | 'pending-encrypt' | 'pending-decrypt' | 'unencrypted' | 'undecrypted'
 
-const state = reactive<StoreData & { filter: FileFilter }>({
+const state = reactive<StoreData & { filter: FileFilter; searchKeyword: string }>({
   files: [],
   activeIndex: 0,
   pasteText: '',
   cryptoConfig: { ...defaultCryptoConfig },
   filter: 'all',
+  searchKeyword: '',
 })
 
 let initialized = false
@@ -31,14 +33,15 @@ export function useJsonStore() {
       state.files = saved.files || []
       state.activeIndex = saved.activeIndex || 0
       state.pasteText = saved.pasteText || ''
-      state.cryptoConfig = { ...defaultCryptoConfig, ...saved.cryptoConfig }
+      state.cryptoConfig = { ...defaultCryptoConfig, ...saved.cryptoConfig, wrapWithQuotes: (saved.cryptoConfig as any)?.wrapWithQuotes ?? false }
       state.filter = (saved as any).filter || 'all'
+      state.searchKeyword = (saved as any).searchKeyword || ''
     }
   }
 
   async function persist() {
     // 深度克隆数据,移除 Vue 的响应式代理
-    const dataToSave: StoreData & { filter?: FileFilter } = {
+    const dataToSave: StoreData & { filter?: FileFilter; searchKeyword?: string } = {
       files: state.files.map(file => ({
         id: file.id,
         name: file.name,
@@ -51,6 +54,7 @@ export function useJsonStore() {
       pasteText: state.pasteText,
       cryptoConfig: { ...state.cryptoConfig },
       filter: state.filter,
+      searchKeyword: state.searchKeyword,
     }
     await saveStoreData(dataToSave)
   }
@@ -181,23 +185,39 @@ export function useJsonStore() {
     state.filter = filter
   }
 
-  function getFilteredFiles(): JsonFile[] {
-    const filter = state.filter
-    if (filter === 'all') {
-      return state.files
-    }
-    return state.files.filter(file => {
-      // 根据原始文件内容判断是否需要加密或解密
-      if (filter === 'pending-encrypt') {
-        // 待加密：原始内容未加密
-        return !detectEncrypted(file.content)
-      } else if (filter === 'pending-decrypt') {
-        // 待解密：原始内容已加密
-        return detectEncrypted(file.content)
-      }
-      return true
-    })
+  function setSearchKeyword(keyword: string) {
+    state.searchKeyword = keyword
   }
+
+function getFilteredFiles(): JsonFile[] {
+  const filter = state.filter
+  const keyword = state.searchKeyword.toLowerCase().trim()
+  
+  return state.files.filter(file => {
+    // 文件名搜索过滤
+    if (keyword && !file.name.toLowerCase().includes(keyword)) {
+      return false
+    }
+    
+    // 状态过滤
+    if (filter === 'all') {
+      return true
+    }
+    
+    const isEncrypted = detectEncrypted(file.content)
+    
+    if (filter === 'pending-encrypt') {
+      return !isEncrypted
+    } else if (filter === 'pending-decrypt') {
+      return isEncrypted
+    } else if (filter === 'unencrypted') {
+      return !isEncrypted && !file.processed
+    } else if (filter === 'undecrypted') {
+      return isEncrypted && !file.processed
+    }
+    return true
+  })
+}
 
   // 获取过滤后文件在原始数组中的索引
   function getFilteredIndexes(): number[] {
@@ -218,6 +238,7 @@ export function useJsonStore() {
     state.pasteText = ''
     state.cryptoConfig = { ...defaultCryptoConfig }
     state.filter = 'all'
+    state.searchKeyword = ''
     initialized = false
   }
 
@@ -236,7 +257,7 @@ export function useJsonStore() {
 
   // Auto-persist on state change
   watch(
-    () => [state.files, state.activeIndex, state.pasteText, state.cryptoConfig],
+    () => [state.files, state.activeIndex, state.pasteText, state.cryptoConfig, state.filter, state.searchKeyword],
     () => persist(),
     { deep: true }
   )
@@ -257,6 +278,7 @@ export function useJsonStore() {
     persist,
     detectAndSetCryptoMode,
     setFilter,
+    setSearchKeyword,
     getFilteredFiles,
     getFilteredIndexes,
   }

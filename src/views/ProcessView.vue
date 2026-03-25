@@ -106,6 +106,23 @@ function handleFilterChange(filter: import('../stores/jsonStore').FileFilter) {
   }
 }
 
+function handleSearchKeywordChange(keyword: string) {
+  store.setSearchKeyword(keyword)
+  // 搜索后选中第一个匹配的文件
+  const filteredFiles = store.getFilteredFiles()
+  if (filteredFiles.length > 0) {
+    const actualIndex = store.state.files.findIndex(f => f.md5 === filteredFiles[0].md5)
+    if (actualIndex >= 0) {
+      store.setActiveIndex(actualIndex)
+      loadCurrentFile()
+      detectCryptoMode()
+    }
+  } else {
+    processedText.value = ''
+    sourceText.value = ''
+  }
+}
+
 function handleRefresh() {
   if (store.isFileMode()) {
     const file = store.state.files[store.state.activeIndex]
@@ -170,7 +187,7 @@ function handleDecrypt() {
 }
 
 function doCrypto(mode: CryptoMode) {
-  const { algorithm, key } = store.state.cryptoConfig
+  const { algorithm, key, wrapWithQuotes } = store.state.cryptoConfig
   if (algorithm !== 'Base64' && !key.trim()) {
     ElMessage.warning('请输入密钥')
     return
@@ -178,8 +195,10 @@ function doCrypto(mode: CryptoMode) {
   const data = mode === 'encrypt' ? sourceText.value : sourceText.value
   try {
     const result = processCrypto(data, mode, algorithm, key)
-    processedText.value = result
-    saveResult(result)
+    // 根据复选框决定是否添加引号
+    const finalResult = wrapWithQuotes ? `"${result}"` : result
+    processedText.value = finalResult
+    saveResult(finalResult)
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : '操作失败，请检查数据格式')
     processedText.value = '操作失败'
@@ -200,7 +219,8 @@ function handleBatchProcess() {
     ElMessage.warning('批量处理仅支持文件模式')
     return
   }
-  const { algorithm, key } = store.state.cryptoConfig
+  const { algorithm, key, wrapWithQuotes } = store.state.cryptoConfig
+  console.log('handleBatchProcess - wrapWithQuotes:', wrapWithQuotes)
   if (algorithm !== 'Base64' && !key.trim()) {
     ElMessage.warning('请输入密钥')
     return
@@ -229,7 +249,10 @@ function handleBatchProcess() {
       const isEncrypted = detectEncrypted(content)
       const mode: CryptoMode = isEncrypted ? 'decrypt' : 'encrypt'
       const result = processCrypto(content, mode, algorithm, key)
-      store.updateProcessed(actualIndex, result, 'done')
+      // 根据复选框决定是否添加引号
+      const finalResult = wrapWithQuotes ? `"${result}"` : result
+      console.log(`File ${file.name} - wrapWithQuotes: ${wrapWithQuotes}, result length: ${result.length}, finalResult: ${finalResult.substring(0, 50)}...`)
+      store.updateProcessed(actualIndex, finalResult, 'done')
       successCount++
     } catch (error) {
       store.updateProcessed(actualIndex, `处理失败: ${error instanceof Error ? error.message : '未知错误'}`, 'error')
@@ -385,9 +408,11 @@ async function handleBack() {
           :files="store.state.files"
           :active-index="store.state.activeIndex"
           :filter="store.state.filter"
+          :search-keyword="store.state.searchKeyword"
           @select="handleFileSelect"
           @add="handleAddFiles"
           @update:filter="handleFilterChange"
+          @update:search-keyword="handleSearchKeywordChange"
         />
       </aside>
 
@@ -411,8 +436,10 @@ async function handleBack() {
             :filtered-count="store.getFilteredFiles().length"
             :has-processed="hasProcessed"
             :batch-loading="batchLoading"
+            :wrap-with-quotes="store.state.cryptoConfig.wrapWithQuotes"
             @batch-process="handleBatchProcess"
             @download-zip="handleDownloadZip"
+            @update:wrap-with-quotes="store.state.cryptoConfig.wrapWithQuotes = $event"
           />
         </div>
 

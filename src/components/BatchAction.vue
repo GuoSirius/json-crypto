@@ -6,17 +6,28 @@ defineProps<{
   filteredCount: number
   hasProcessed: boolean
   batchLoading: boolean
+  wrapWithQuotes: boolean
 }>()
 
 const emit = defineEmits<{
   batchProcess: []
   downloadSingle: []
   downloadZip: []
+  'update:wrapWithQuotes': [value: boolean]
 }>()
 </script>
 
 <template>
   <div class="flex items-center gap-2">
+    <label class="flex items-center gap-1.5 cursor-pointer group">
+      <input
+        type="checkbox"
+        :checked="wrapWithQuotes"
+        @change="(e) => { emit('update:wrapWithQuotes', (e.target as HTMLInputElement).checked) }"
+        class="w-4 h-4 rounded bg-dark-bg/80 border-2 border-dark-border text-blue-500 focus:ring-2 focus:ring-blue-500/30 cursor-pointer transition-all hover:border-blue-500/50"
+      />
+      <span class="text-xs font-medium text-gray-400 group-hover:text-gray-300 transition-colors">加引号</span>
+    </label>
     <button
       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-violet-400 bg-gradient-to-br from-violet-500 to-violet-600 text-white hover:from-violet-600 hover:to-violet-700 hover:shadow-xl hover:shadow-violet-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
       :disabled="filteredCount === 0 || batchLoading"

@@ -14,6 +14,7 @@ export interface CryptoConfig {
   algorithm: CryptoAlgorithm
   key: string
   mode: CryptoMode
+  wrapWithQuotes: boolean
 }
 
 export interface StoreData {
@@ -21,4 +22,6 @@ export interface StoreData {
   activeIndex: number
   pasteText: string
   cryptoConfig: CryptoConfig
+  filter?: 'all' | 'pending-encrypt' | 'pending-decrypt' | 'unencrypted' | 'undecrypted'
+  searchKeyword?: string
 }

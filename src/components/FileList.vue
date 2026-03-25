@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { FileJson, Check, AlertCircle, Plus, Filter } from 'lucide-vue-next'
+import { FileJson, Check, AlertCircle, Plus, Filter, Search, X } from 'lucide-vue-next'
 import type { JsonFile } from '../types'
 import type { FileFilter } from '../stores/jsonStore'
 
@@ -8,34 +8,53 @@ const props = defineProps<{
   files: JsonFile[]
   activeIndex: number
   filter: FileFilter
+  searchKeyword: string
 }>()
 
 const emit = defineEmits<{
   select: [md5: string]
   add: []
   'update:filter': [filter: FileFilter]
+  'update:searchKeyword': [keyword: string]
 }>()
 
 const filterOptions: { value: FileFilter; label: string }[] = [
   { value: 'all', label: '全部' },
   { value: 'pending-encrypt', label: '待加密' },
   { value: 'pending-decrypt', label: '待解密' },
+  { value: 'unencrypted', label: '未加密' },
+  { value: 'undecrypted', label: '未解密' },
 ]
 
 const displayedFiles = computed(() => {
   const f = props.filter
-  if (f === 'all') {
-    return props.files
-  }
-  // 根据原始文件内容判断是否需要加密或解密
+  const keyword = props.searchKeyword.toLowerCase().trim()
+  
   return props.files.filter(file => {
+    // 文件名搜索过滤
+    if (keyword && !file.name.toLowerCase().includes(keyword)) {
+      return false
+    }
+    
+    // 状态过滤
+    if (f === 'all') {
+      return true
+    }
+    // 根据原始文件内容判断是否需要加密或解密
     const isEncrypted = detectEncrypted(file.content)
+    
     if (f === 'pending-encrypt') {
-      // 待加密：原始内容未加密
+      // 待加密：原始内容需要加密
       return !isEncrypted
     } else if (f === 'pending-decrypt') {
-      // 待解密：原始内容已加密
+      // 待解密：原始内容需要解密
       return isEncrypted
+    } else if (f === 'unencrypted') {
+      // 未加密：原始内容需要加密，但尚未处理
+      return !isEncrypted && !file.processed
+    } else if (f === 'undecrypted') {
+      // 未解密：原始内容需要解密，但是尚未处理
+      return isEncrypted && !file.processed
     }
     return true
   })
@@ -56,6 +75,15 @@ function detectEncrypted(content: string): boolean {
 function handleFilterChange(e: Event) {
   const value = (e.target as HTMLSelectElement).value as FileFilter
   emit('update:filter', value)
+}
+
+function handleSearchInput(e: Event) {
+  const value = (e.target as HTMLInputElement).value
+  emit('update:searchKeyword', value)
+}
+
+function clearSearch() {
+  emit('update:searchKeyword', '')
 }
 </script>
 
@@ -84,6 +112,25 @@ function handleFilterChange(e: Event) {
             {{ opt.label }}
           </option>
         </select>
+      </div>
+    </div>
+    <!-- Search Input -->
+    <div class="px-2 py-1.5 border-b border-dark-border bg-dark-bg">
+      <div class="relative w-full">
+        <Search :size="11" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
+        <input
+          type="text"
+          :value="searchKeyword"
+          @input="handleSearchInput"
+          placeholder="输入关键词查找..."
+          class="w-full bg-dark-card border border-dark-border rounded pl-6.5 pr-7 py-1 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary transition-colors box-border min-w-0"
+        />
+        <X
+          v-if="searchKeyword"
+          :size="11"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 cursor-pointer shrink-0 z-10"
+          @click="clearSearch"
+        />
       </div>
     </div>
     <div class="flex-1 overflow-y-auto">
