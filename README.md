@@ -195,6 +195,49 @@ pnpm run preview
 
 > **图示**：Settings → Pages → Source 选择 "GitHub Actions"
 
+##### Gitee Pages 配置步骤（可选，适合国内用户）
+
+如果只需要 GitHub Pages，跳过此步骤。如果需要国内访问速度快，可以部署到 Gitee Pages：
+
+**方式一：手动部署（推荐小白）**
+
+1. **克隆仓库到本地**
+   ```bash
+   git clone https://gitee.com/你的用户名/json-crypto.git
+   cd json-crypto
+   ```
+
+2. **运行部署脚本**
+   ```bash
+   chmod +x scripts/deploy-gitee.sh
+   ./scripts/deploy-gitee.sh
+   ```
+   脚本会自动构建并推送到 `gh-pages` 分支。
+
+3. **启用 Gitee Pages**
+   - 进入 Gitee 仓库页面
+   - 点击「管理」
+   - 在左侧菜单找到「Gitee Pages」
+   - 选择分支：`gh-pages`
+   - 点击「启动」
+   - 等待部署完成
+
+4. **获取访问地址**
+   - 部署成功后，页面会显示访问地址
+   - 格式：`https://你的用户名.gitee.io/json-crypto/`
+
+**方式二：自动部署（需要阿里云云效）**
+
+如果希望每次推送自动部署到 Gitee，可以使用阿里云云效：
+1. 注册/登录 [云效](https://flow.aliyun.com/)
+2. 创建新流水线 → 选择「构建静态网站」
+3. 配置 Gitee 仓库和分支（选择 main）
+4. 设置构建命令：`pnpm install && pnpm run build`
+5. 设置部署分支：`gh-pages`
+6. 启用流水线
+
+> **注意**：Gitee Pages 免费版每次更新需要手动刷新，或使用云效自动刷新。
+
 ##### Cloudflare Pages 配置步骤（可选）
 
 如果只需要 GitHub Pages，跳过此步骤。如果需要双平台部署：

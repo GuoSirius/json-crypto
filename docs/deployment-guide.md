@@ -84,6 +84,96 @@ https://<你的用户名>.github.io/<仓库名>/
 
 > **注意**：GitHub Pages 部署时自动设置 `VITE_BASE` 为 `/<仓库名>/`，无需手动配置。
 
+### Gitee Pages 配置
+
+Gitee Pages 是国内版的 GitHub Pages，访问速度快，适合国内用户使用。
+
+#### 首次设置（手动部署 - 推荐）
+
+**前置要求**：
+- 已安装 Git
+- 已安装 Node.js 和 pnpm
+
+**步骤 1：克隆仓库（如果还没有）**
+
+```bash
+git clone https://gitee.com/你的用户名/json-crypto.git
+cd json-crypto
+```
+
+**步骤 2：运行部署脚本**
+
+```bash
+# 给脚本添加执行权限
+chmod +x scripts/deploy-gitee.sh
+
+# 运行部署脚本
+./scripts/deploy-gitee.sh
+```
+
+脚本会自动执行：
+1. 安装依赖
+2. 运行测试
+3. 构建项目
+4. 创建 `gh-pages` 分支
+5. 推送构建产物到 Gitee
+
+**步骤 3：启用 Gitee Pages**
+
+1. 打开你的 Gitee 仓库页面，如：`https://gitee.com/你的用户名/json-crypto`
+2. 点击菜单「管理」
+3. 在左侧找到「Gitee Pages」
+4. 选择分支：`gh-pages`
+5. 点击「启动」按钮
+6. 等待部署完成（可能需要 1-3 分钟）
+
+**步骤 4：获取访问地址**
+
+- 部署成功后，页面会显示访问地址
+- 格式：`https://你的用户名.gitee.io/json-crypto/`
+
+> **注意**：Gitee Pages 免费版每次更新后需要手动点击「更新」按钮刷新。
+
+#### 自动部署（使用阿里云云效）
+
+如果你希望推送代码后自动部署到 Gitee，可以使用阿里云云效：
+
+1. **注册/登录云效**
+   - 访问 https://flow.aliyun.com/
+   - 使用阿里云账号登录
+
+2. **创建流水线**
+   - 点击「创建流水线」
+   - 选择「构建静态网站」
+   - 输入流水线名称，如「json-crypto-deploy」
+
+3. **配置代码源**
+   - 选择「Gitee」
+   - 授权你的 Gitee 仓库
+   - 选择分支：`main`
+
+4. **配置构建**
+   - 构建命令：`pnpm install && pnpm run build`
+   - 输出目录：`dist`
+
+5. **配置部署**
+   - 部署方式：选择「Gitee Pages」
+   - 选择分支：`gh-pages`
+
+6. **保存并启用**
+
+这样每次推送到 Gitee 的 main 分支，云效会自动构建并部署。
+
+#### 访问地址
+
+```
+https://<你的用户名>.gitee.io/<仓库名>/
+```
+
+例如：`https://example.gitee.io/json-crypto/`
+
+> **注意**：Gitee Pages 部署时设置 `VITE_BASE` 为 `/`，直接使用根路径。
+
 ### Cloudflare Pages 配置
 
 #### 前置准备
