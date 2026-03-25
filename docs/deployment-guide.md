@@ -62,6 +62,7 @@
 2. **部署阶段**（CI 通过后并行执行）：
    - 部署到 GitHub Pages
    - 部署到 Cloudflare Pages
+   - Gitee Pages（需手动或使用阿里云云效）
 
 ### GitHub Pages 配置
 
