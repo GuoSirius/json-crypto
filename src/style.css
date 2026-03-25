@@ -1,0 +1,89 @@
+@import "element-plus/dist/index.css";
+
+@layer base {
+  :root {
+    --el-color-primary: #409EFF;
+    --el-bg-color: #1A1A24;
+    --el-bg-color-overlay: #252535;
+    --el-text-color-primary: #FFFFFF;
+    --el-text-color-regular: #B8B8C8;
+    --el-border-color: #3A3A4A;
+    --el-fill-color-blank: rgba(26, 26, 36, 0.8);
+    --el-fill-color-light: rgba(58, 58, 74, 0.6);
+    --el-fill-color-lighter: rgba(58, 58, 74, 0.4);
+    --el-fill-color-extra-light: rgba(58, 58, 74, 0.2);
+    --el-bg-color-page: #1A1A24;
+  }
+
+  body {
+    margin: 0;
+    background-color: #1A1A24;
+    color: #FFFFFF;
+    font-family: 'JetBrains Mono', 'Noto Sans SC', sans-serif;
+  }
+
+  #app {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* 自定义滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(26, 26, 36, 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 120, 0.6);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(120, 120, 140, 0.8);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: rgba(26, 26, 36, 0.5);
+  }
+
+  /* Firefox 滚动条 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 100, 120, 0.6) rgba(26, 26, 36, 0.5);
+  }
+}
+
+/* el-select 下拉框深色主题 - 更强制的覆盖 */
+:where(body) .el-select-dropdown.dark-select-dropdown {
+  background-color: rgba(26, 26, 36, 0.98) !important;
+  border-color: rgb(58, 58, 74) !important;
+  border: 1px solid rgb(58, 58, 74) !important;
+  padding: 6px 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item {
+  color: rgb(229, 231, 235) !important;
+  background-color: transparent !important;
+  padding: 8px 20px !important;
+}
+
+:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item:hover {
+  background-color: rgba(58, 58, 74, 0.8) !important;
+}
+
+:where(body) .el-select-dropdown.dark-select-dropdown .el-select-dropdown__item.is-selected {
+  background-color: rgb(59, 130, 246) !important;
+  color: white !important;
+}
+
+/* 尝试直接覆盖所有 el-select 下拉框 */
+.el-popper.is-light {
+  background-color: rgba(26, 26, 36, 0.98) !important;
+  border-color: rgb(58, 58, 74) !important;
+}
