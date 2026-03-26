@@ -169,8 +169,91 @@ Cloudflare 有两个版本的界面（新版和旧版），请根据你的界面
    ```
 
 5. **查看部署状态**
-   - 访问 [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages
-   - 点击 `json-crypto` 项目查看部署日志
+  - 访问 [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages
+  - 点击 `json-crypto` 项目查看部署日志
+
+#### 创建 Cloudflare Pages 项目（重要！）
+
+**部署前必须创建项目**：Cloudflare Pages 部署需要一个已存在的项目。如果部署失败显示 "Project not found"，请按以下步骤创建：
+
+**方法一：手动创建（推荐）**
+
+由于 Cloudflare 存在新旧两种界面风格，请根据你看到的界面选择对应的步骤：
+
+##### 新版界面（默认，左侧导航栏风格）
+
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. 在左侧导航栏找到并点击 **"Workers & Pages"**
+3. 点击页面右上角的 **"Create application"** 按钮
+4. 在弹出的选项中选择 **"Pages"** 标签
+5. 点击 **"Upload assets"**（直接上传方式）
+6. 项目名称填写：`json-crypto`（必须与 workflow 中的名称一致）
+7. 点击 **"Create project"**
+
+> **新版界面特征**：左侧有 "Overview"、"Workers & Pages"、"Account" 等导航菜单
+
+##### 旧版界面（右侧边栏风格）
+
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. 在页面顶部导航栏点击 **"Pages"**
+3. 点击 **"Create a project"** 按钮
+4. 选择 **"Direct Upload"**
+5. 项目名称填写：`json-crypto`（必须与 workflow 中的名称一致）
+6. 点击 **"Create project"**
+
+> **旧版界面特征**：页面右侧有 "Account Details"、"API Tokens" 等链接，顶部有 "Overview"、"Analytics"、"DNS"、"Pages" 等标签页
+
+##### 界面切换方法
+
+如果你找不到上述入口，可能是界面版本问题：
+- **切换到新版**：旧版页面右下角通常有 "Try new dashboard" 或 "Switch to new dashboard" 链接
+- **切换到旧版**：新版页面左下角或右下角可能有 "Switch to classic dashboard" 链接
+- **直接访问**：https://dash.cloudflare.com/?to=/:account/pages
+
+**方法二：使用 wrangler CLI 创建**
+```bash
+# 安装 wrangler
+npm install -g wrangler
+
+# 登录 Cloudflare
+wrangler login
+
+# 创建项目
+wrangler pages project create json-crypto --production-branch main
+```
+
+> **注意**：如果项目已存在，请确保项目名称与 `.github/workflows/deploy.yml` 中的 `--project-name=json-crypto` 完全一致。
+
+#### 解决部署错误 "Project not found"
+
+**错误信息**：`Project not found. The specified project name does not match any of your existing projects. [code: 8000007]`
+
+**解决方案**：
+1. **确认项目是否存在**：
+   ```bash
+   wrangler pages project list
+   ```
+
+2. **如果项目不存在**，按照上述步骤创建项目
+
+3. **如果项目名称不匹配**，修改 workflow 中的项目名称：
+   - 编辑 `.github/workflows/deploy.yml`
+   - 修改第 147 行：`--project-name=json-crypto`
+   - 改为：`--project-name=your-custom-name`
+
+4. **使用诊断脚本检查**：
+   ```bash
+   # Bash/Linux/Mac
+   ./scripts/diagnose-cloudflare.sh
+   
+   # Windows PowerShell
+   .\scripts\diagnose-cloudflare.ps1
+   ```
+
+5. **使用增强版部署脚本**（自动检查和创建项目）：
+   ```bash
+   ./scripts/deploy-cloudflare.sh
+   ```
 
 #### 关于 Cloudflare 账户结构
 - **登录邮箱/用户名**：你登录 Cloudflare 时使用的凭据

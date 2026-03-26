@@ -166,7 +166,16 @@ describe('decrypt', () => {
 
   it('should throw error when decrypting with wrong key', () => {
     const encrypted = encrypt('hello', 'AES', 'correct-key')
+    // 确保加密成功
+    expect(encrypted).toBeTruthy()
+    expect(encrypted).not.toBe('hello')
+    
+    // 尝试使用错误的密钥解密，应该抛出错误
     expect(() => decrypt(encrypted, 'AES', 'wrong-key')).toThrow()
+    
+    // 确保使用正确的密钥可以解密
+    const decrypted = decrypt(encrypted, 'AES', 'correct-key')
+    expect(decrypted).toBe('hello')
   })
 
   it('should throw error for invalid Base64 data', () => {

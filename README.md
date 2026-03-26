@@ -2,6 +2,12 @@
 
 基于 Vite + Vue 3 + TypeScript + Element Plus + UnoCSS + CryptoJS 构建的 JSON 数据处理工具，支持文件上传/粘贴、格式化、压缩、加密解密、批量处理和导出下载。
 
+## 📋 环境要求
+
+- **Node.js 24+** (必须使用 24 或更高版本)
+- **pnpm 10.32.1+** (推荐使用 10.32.1)
+- **重要**：项目已配置为仅支持 Node.js 24 及以上版本
+
 ## 功能特性
 
 ### 数据处理
@@ -351,6 +357,42 @@ pnpm run preview
 - **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
 - **Cloudflare Pages**：Cloudflare Dashboard → Pages → 点击项目查看部署日志
 - **Gitee Pages**：Gitee 仓库 → 管理 → Gitee Pages → 查看部署状态
+
+#### 解决 Cloudflare Pages 部署失败
+
+如果 Cloudflare Pages 部署失败，显示 **"Project not found"** 错误：
+
+1. **手动创建 Cloudflare Pages 项目**：
+
+   **新版界面（左侧导航栏）**：
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - 左侧导航 → Workers & Pages → Create application → Pages → Upload assets
+   - 项目名称填写：`json-crypto`
+
+   **旧版界面（顶部导航栏）**：
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - 顶部导航 → Pages → Create a project → Direct Upload
+   - 项目名称填写：`json-crypto`
+
+   创建完成后，返回 GitHub Actions 重新运行失败的 workflow
+
+2. **使用诊断脚本检查问题**：
+   ```bash
+   chmod +x scripts/diagnose-cloudflare.sh
+   ./scripts/diagnose-cloudflare.sh
+   ```
+
+3. **使用增强版部署脚本**：
+   ```bash
+   chmod +x scripts/deploy-cloudflare.sh
+   ./scripts/deploy-cloudflare.sh
+   ```
+   > 该脚本会自动检查并引导创建 Cloudflare 项目
+
+4. **修改项目名称**（如果名称被占用）：
+   - 编辑 `.github/workflows/deploy.yml`
+   - 修改第 147 行：`--project-name=json-crypto`
+   - 改为：`--project-name=your-custom-name`
 
 ---
 
