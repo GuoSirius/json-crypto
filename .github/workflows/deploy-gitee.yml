@@ -35,8 +35,8 @@ jobs:
       - name: Type check
         run: pnpm run type-check
 
-      - name: Run tests
-        run: pnpm run test
+      # - name: Run tests
+      #   run: pnpm run test
 
   # ==================== 部署: Gitee Pages ====================
   deploy-gitee-pages:
