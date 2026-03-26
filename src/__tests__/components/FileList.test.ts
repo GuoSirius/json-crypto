@@ -119,7 +119,8 @@ describe('FileList.vue', () => {
   it('emits add event when add button is clicked', async () => {
     const wrapper = createWrapper()
     const addBtn = wrapper.findAll('button').find(b => b.text().includes('添加'))
-    await addBtn.trigger('click')
+    expect(addBtn).toBeDefined()
+    await addBtn!.trigger('click')
     expect(wrapper.emitted('add')).toHaveLength(1)
   })
 

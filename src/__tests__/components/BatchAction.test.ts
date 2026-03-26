@@ -97,9 +97,11 @@ describe('BatchAction.vue', () => {
 
   it('reflects wrapWithQuotes prop on checkbox checked state', () => {
     const wrapperChecked = createWrapper({ wrapWithQuotes: true })
-    expect(wrapperChecked.find('input[type="checkbox"]').element.checked).toBe(true)
+    const checkboxChecked = wrapperChecked.find('input[type="checkbox"]').element as HTMLInputElement
+    expect(checkboxChecked.checked).toBe(true)
 
     const wrapperUnchecked = createWrapper({ wrapWithQuotes: false })
-    expect(wrapperUnchecked.find('input[type="checkbox"]').element.checked).toBe(false)
+    const checkboxUnchecked = wrapperUnchecked.find('input[type="checkbox"]').element as HTMLInputElement
+    expect(checkboxUnchecked.checked).toBe(false)
   })
 })

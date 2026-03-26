@@ -56,7 +56,11 @@ export function useJsonStore() {
       filter: state.filter,
       searchKeyword: state.searchKeyword,
     }
-    await saveStoreData(dataToSave)
+    try {
+      await saveStoreData(dataToSave)
+    } catch (error) {
+      console.error('Failed to persist store data:', error)
+    }
   }
 
   async function addFiles(fileList: File[]): Promise<{addedCount: number; duplicateCount: number; duplicateNames: string[]}> {

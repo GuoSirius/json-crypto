@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, h } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CryptoConfig from '@/components/CryptoConfig.vue'
 import type { CryptoAlgorithm, CryptoMode } from '@/types'

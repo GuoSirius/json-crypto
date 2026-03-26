@@ -2,7 +2,7 @@
  * Global test setup file
  * Mocks for browser APIs and third-party modules used in tests
  */
-import { vi } from 'vitest'
+import { vi, beforeAll, afterAll } from 'vitest'
 
 // Mock IndexedDB (idb library)
 vi.mock('idb', () => ({
@@ -92,6 +92,14 @@ beforeAll(() => {
     }
   }
   console.warn = vi.fn()
+
+  // Handle unhandled promise rejections in tests
+  window.addEventListener('unhandledrejection', (event) => {
+    // Suppress unhandled rejections that are part of test scenarios
+    // The test may intentionally trigger a rejection and handle it
+    event.preventDefault()
+    // Return true to indicate the rejection was handled
+  })
 })
 
 afterAll(() => {

@@ -342,21 +342,28 @@ describe('jsonStore', () => {
 
   describe('Error Handling & Bulk Operations', () => {
     it('should handle persist failure gracefully (saveStoreData rejects)', async () => {
-      // Get the mocked saveStoreData and make it reject
+      // Get the mocked saveStoreData and make it reject when called
       const { saveStoreData } = await import('@/utils/db')
-      vi.mocked(saveStoreData).mockRejectedValueOnce(new Error('DB write failed'))
+      
+      // Create a function that returns a rejecting promise when called (not immediately)
+      vi.mocked(saveStoreData).mockImplementation(() => 
+        Promise.reject(new Error('DB write failed'))
+      )
 
       // Adding a file triggers persist via watch — the rejection is caught internally
-      // We need to wait for the persist to settle
       const file = createMockFile('test.json', '{"key":"value"}')
 
       // Suppress the unhandled rejection from the watch-triggered persist
       const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
       try {
-        const result = await store.addFiles(file)
+        const result = await store.addFiles([file])
         expect(result.addedCount).toBe(1)
+        // Allow the watch callback to finish
+        await new Promise(resolve => setTimeout(resolve, 10))
       } finally {
         spy.mockRestore()
+        // Reset the mock to prevent affecting other tests
+        vi.mocked(saveStoreData).mockReset()
       }
     })
 
