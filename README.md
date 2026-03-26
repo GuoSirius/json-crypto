@@ -183,24 +183,25 @@ pnpm run preview
 
 ## 部署
 
+本项目支持同时部署到 **GitHub Pages**、**Cloudflare Pages** 和 **Gitee Pages** 三个平台。
+
 ### 自动部署（推荐）
 
 推送代码到 `main` 分支后，GitHub Actions 会自动：
 1. 运行类型检查和单元测试
-2. 测试通过后并行部署到 **GitHub Pages** 和 **Cloudflare Pages**
-3. Gitee Pages 需手动或使用阿里云云效自动部署
+2. 测试通过后并行部署到 **GitHub Pages**、**Cloudflare Pages** 和 **Gitee Pages**
 
-#### 首次配置（必做）
+#### 首次配置
 
-> 详细步骤和图解请参阅 [详细部署指南](docs/deployment-guide.md)。
+> 详细步骤和图解请参阅 [多平台部署指南](docs/multi-platform-deployment.md)。
 
-##### GitHub Pages 配置步骤
+##### 1. GitHub Pages 配置（必需）
 
 1. **打开仓库设置**
    - 进入 GitHub 仓库页面 → 点击 `Settings` 标签
 
 2. **找到 Pages 设置**
-   - 在左侧菜单中找到 `Pages`（通常在底部）
+   - 在左侧菜单中找到 `Pages`（在 Code and automation 下方）
 
 3. **配置 Build 和部署**
    - 在 "Build and deployment" 部分，Source 下拉菜单选择 `GitHub Actions`
@@ -208,7 +209,55 @@ pnpm run preview
 4. **保存**
    - 无需其他配置，GitHub Actions 工作流会自动处理后续部署
 
-> **图示**：Settings → Pages → Source 选择 "GitHub Actions"
+##### 2. Cloudflare Pages 配置（推荐）
+
+1. **获取 Cloudflare API Token**
+   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - 点击右上角头像 → "My Profile" → "API Tokens" → "Create Custom Token"
+   - 配置权限：
+     - **Token name**：`GitHub Deploy`
+     - **Permissions**：Account → Cloudflare Pages → Edit
+     - **Account Resources**：选择你的账户
+   - 点击 "Create Token" 并复制 Token
+
+2. **获取 Cloudflare Account ID**
+   - 在 Cloudflare Dashboard 首页右上角头像下方找到账户名称
+   - 点击 → 复制 "Account ID"
+
+3. **添加到 GitHub Secrets**
+   - 进入 GitHub 仓库 → Settings → Secrets and variables → Actions
+   - 添加两个 Secret：
+     - `CLOUDFLARE_API_TOKEN`：粘贴 API Token
+     - `CLOUDFLARE_ACCOUNT_ID`：粘贴账户 ID
+
+##### 3. Gitee Pages 配置（可选）
+
+如果需要部署到 Gitee Pages（国内访问速度快）：
+
+**方式一：自动部署（推荐）**
+
+1. 在 Gitee 创建个人访问令牌（Settings → 私人令牌）
+2. 在 GitHub 仓库添加 Secrets：
+   - `GITEE_TOKEN`：Gitee 个人访问令牌
+   - `GITEE_USERNAME`：你的 Gitee 用户名
+   - `GITEE_REPO`：你的 Gitee 仓库名称（如 `json-crypto`）
+
+**方式二：手动部署**
+
+1. 克隆 Gitee 仓库并运行 `scripts/deploy-gitee.sh`
+2. 在 Gitee 仓库 → 管理 → Gitee Pages → 启动
+
+#### 查看部署状态
+
+- **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
+- **Cloudflare Pages**：Cloudflare Dashboard → Pages → 查看部署日志
+- **Gitee Pages**：Gitee 仓库 → 管理 → Gitee Pages → 查看部署状态
+
+#### 访问地址
+
+- **GitHub Pages**：`https://<你的用户名>.github.io/json-crypto/`
+- **Cloudflare Pages**：`https://json-crypto.pages.dev/`（或自定义域名）
+- **Gitee Pages**：`https://<你的用户名>.gitee.io/json-crypto/`
 
 ##### Gitee Pages 配置步骤（可选，适合国内用户）
 
