@@ -174,7 +174,7 @@ jobs:
       - name: Build for Gitee Pages
         run: pnpm run build
         env:
-          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_BASE: /
 
       - name: Configure Git
         run: |
