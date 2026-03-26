@@ -311,7 +311,11 @@ Gitee Pages 适合国内用户，国内访问速度快。
 
 1. 在 Gitee 创建个人访问令牌（Personal Access Token）
    - 进入 Gitee → 设置 → 私人令牌
-   - 创建新令牌，勾选 `projects` 权限
+   - 创建新令牌，**必须勾选以下权限**：
+     - ✅ **projects**（仓库权限，必选）
+     - ✅ **pull_requests**（可选，如需要）
+     - ✅ **issues**（可选，如需要）
+   - **重要**：至少要勾选 `projects` 权限才能进行仓库操作
    - 复制令牌（只显示一次）
 
 2. 在 GitHub 仓库添加 Secrets

@@ -243,6 +243,9 @@ pnpm run preview
 **方式一：自动部署（推荐）**
 
 1. 在 Gitee 创建个人访问令牌（Settings → 私人令牌）
+   - **必须勾选权限**：✅ **projects**（仓库权限）
+   - **可选权限**：pull_requests, issues 等
+   - 复制生成的令牌（只显示一次）
 2. 在 GitHub 仓库添加 Secrets：
    - `GITEE_TOKEN`：Gitee 个人访问令牌
    - `GITEE_USERNAME`：你的 Gitee 用户名
