@@ -66,10 +66,11 @@ json-crypto/
 │   ├── deploy.yml              # CI/CD 工作流（测试 + GitHub Pages + Cloudflare Pages 部署）
 │   └── deploy-gitee.yml        # Gitee Pages 自动部署工作流
 ├── scripts/
-│   ├── deploy-github.sh        # 手动部署 GitHub Pages
-│   ├── deploy-gitee.sh         # 手动部署 Gitee Pages
+│   ├── build-and-preview.sh    # 本地构建 + 预览
 │   ├── deploy-cloudflare.sh    # 手动部署 Cloudflare Pages
-│   └── build-and-preview.sh    # 本地构建 + 预览
+│   ├── deploy-gitee.sh         # 手动部署 Gitee Pages
+│   ├── diagnose-cloudflare.sh  # Cloudflare Pages 部署问题诊断
+│   └── diagnose-gitee.sh       # Gitee Pages 部署问题诊断
 ├── public/
 │   ├── 404.html                # GitHub Pages SPA 回退
 │   ├── _redirects              # Cloudflare Pages SPA 回退
@@ -78,7 +79,9 @@ json-crypto/
 │   ├── main.ts                 # 应用入口
 │   ├── App.vue                 # 根组件
 │   ├── style.css               # 全局主题样式（亮色/暗黑）
-│   ├── types/index.ts          # TypeScript 类型定义
+│   ├── vite-env.d.ts           # Vite 类型声明
+│   ├── types/
+│   │   └── index.ts            # TypeScript 类型定义
 │   ├── utils/
 │   │   ├── crypto.ts           # 加密/解密封装（6 种算法）
 │   │   ├── json.ts             # JSON 格式化/压缩/验证
@@ -89,7 +92,8 @@ json-crypto/
 │   │   └── jsonStore.ts        # 全局状态管理 + 自动持久化
 │   ├── composables/
 │   │   └── useTheme.ts         # 主题切换 composable
-│   ├── router/index.ts         # 路由配置 + 导航守卫
+│   ├── router/
+│   │   └── index.ts            # 路由配置 + 导航守卫
 │   ├── components/
 │   │   ├── FileList.vue        # 文件列表（筛选 + 搜索）
 │   │   ├── JsonEditor.vue      # JSON 编辑器（复制/下载/加密/解密）
@@ -101,8 +105,9 @@ json-crypto/
 │   │   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
 │   │   └── ProcessView.vue     # 处理页（集成所有功能）
 │   ├── assets/                 # 静态资源
-│   └── __tests__/              # 测试文件（17 个文件，366 个用例）
+│   └── __tests__/              # 测试文件（18 个文件，366 个用例）
 ├── docs/
+│   ├── README.md               # 文档首页
 │   ├── deployment.md           # 完整的多平台部署指南
 │   ├── docker.md               # Docker 容器化部署指南
 │   ├── troubleshooting.md      # 常见问题解决方案
