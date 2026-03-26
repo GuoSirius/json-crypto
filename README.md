@@ -55,9 +55,11 @@
 ```
 json-crypto/
 ├── .github/workflows/
-│   └── deploy.yml              # CI/CD 工作流（测试 + 双平台部署）
+│   ├── deploy.yml              # CI/CD 工作流（测试 + GitHub Pages + Cloudflare Pages 部署）
+│   └── deploy-gitee.yml        # Gitee Pages 自动部署工作流
 ├── scripts/
 │   ├── deploy-github.sh        # 手动部署 GitHub Pages
+│   ├── deploy-gitee.sh         # 手动部署 Gitee Pages
 │   ├── deploy-cloudflare.sh    # 手动部署 Cloudflare Pages
 │   └── build-and-preview.sh    # 本地构建 + 预览
 ├── public/
@@ -90,14 +92,24 @@ json-crypto/
 │   ├── views/
 │   │   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
 │   │   └── ProcessView.vue     # 处理页（集成所有功能）
-│   └── __tests__/              # 测试文件（12 个文件，264 个用例）
+│   ├── assets/                 # 静态资源
+│   └── __tests__/              # 测试文件（18 个文件，264 个用例）
 ├── docs/
 │   ├── deployment-guide.md     # 详细部署指南
+│   ├── docker-guide.md         # Docker 快速开始指南
 │   ├── test-analysis-report.md # 测试问题分析报告
 │   └── test-coverage-analysis.md # 测试覆盖率分析报告
 ├── vite.config.ts              # Vite 配置（动态 base）
 ├── uno.config.ts               # UnoCSS 配置
-└── package.json                # 项目依赖和脚本
+├── tsconfig.json               # TypeScript 配置
+├── tsconfig.app.json           # 应用 TypeScript 配置
+├── tsconfig.node.json          # Node 环境 TypeScript 配置
+├── package.json                # 项目依赖和脚本
+├── pnpm-lock.yaml              # pnpm 锁文件
+├── docker-compose.yml          # Docker Compose 配置
+├── Dockerfile                  # Docker 镜像构建
+├── nginx.conf                  # Nginx 配置
+└── index.html                  # HTML 入口
 ```
 
 ## 快速开始

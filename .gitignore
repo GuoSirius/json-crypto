@@ -144,3 +144,9 @@ dist/
 
 # Git hooks (由 pnpm prepare 自动生成，本地开发使用)
 .husky/
+
+# pnpm 全局存储
+.pnpm-store/
+
+# CodeBuddy
+.codebuddy/
