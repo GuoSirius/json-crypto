@@ -65,33 +65,101 @@
 
 Cloudflare Pages 提供全球 CDN 加速，访问速度更快。
 
+**⚠️ 重要提示**：Cloudflare 目前有新版本和旧版本两种界面，布局不同但功能相同。如果某个步骤在当前位置找不到，请尝试：
+1. 切换界面版本（通常页面右下角有切换链接）
+2. 使用提供的直接访问链接
+3. 参考故障排查部分的其他方法
+
 #### 配置步骤
 
 1. **获取 Cloudflare API Token**
-   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
-   - 点击右上角头像 → "My Profile"
-   - 左侧菜单点击 "API Tokens"
-   - 点击 "Create Custom Token"
-   - 配置权限：
-     - **Token name**：`GitHub Deploy`
-     - **Permissions**：
-       - Account → Cloudflare Pages → Edit
-       - Zone → Cloudflare Pages → Edit
-     - **Account Resources**：选择你的账户
-   - 点击 "Create Token"
-   - **重要**：复制生成的 Token（只显示一次）
+
+#### **界面版本说明**
+Cloudflare 目前有两个版本的界面，功能相同但布局不同：
+
+#### **新版界面**（默认）
+- 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+- 点击右上角头像 → "My Profile"
+- 左侧菜单点击 **"API Tokens"**
+- 点击 "Create Custom Token"
+- 配置权限：
+  - **Token name**：`GitHub Deploy`
+  - **Permissions**：
+    - Account → Cloudflare Pages → Edit
+  - **Account Resources**：选择你的账户（不是登录邮箱，是 Cloudflare 账户名称）
+- 点击 "Create Token"
+- **重要**：复制生成的 Token（只显示一次）
+
+#### **旧版界面**
+- 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+- 点击页面右上角的 **"My Profile"**
+- 选择 **"API Tokens"** 标签
+- 点击 "Create Token"
+- 配置权限：
+  - **Permissions**：选择 "Account" → "Cloudflare Pages" → "Edit"
+  - **Account Resources**：选择你的账户
+- 点击 "Create Token"
+- 复制生成的 Token
+
+#### **界面切换方法**
+- **新版界面特征**：
+  - 左侧导航栏有 "Account"、"Overview"、"Workers & Pages" 等分类
+  - 右上角头像旁边有 "Account" 按钮
+  - 通常有 "Try new Cloudflare dashboard" 提示
+- **旧版界面特征**：
+  - 右侧边栏有 "Account Details"、"API Tokens" 等链接
+  - 页面右下角有 "Switch to old dashboard" 链接
+  - 布局较为传统，信息集中在右侧
+- **切换方法**：
+  - 新版 → 旧版：页面右下角点击 "Switch to old dashboard"
+  - 旧版 → 新版：页面右上角点击 "Try new Cloudflare dashboard"
+- **直接访问链接**：
+  - 新版 API Tokens：https://dash.cloudflare.com/profile/api-tokens
+  - 旧版 API Tokens：https://dash.cloudflare.com/profile/tokens
+  - 新版 Account Details：https://dash.cloudflare.com/profile/account
+  - 旧版 Account Details：https://dash.cloudflare.com/profile/account/details
 
 2. **获取 Cloudflare Account ID**
-   - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
-   - 在首页右上角头像下方，找到你的账户名称
-   - 点击 → 复制 "Account ID"
+
+Cloudflare 有两个版本的界面（新版和旧版），请根据你的界面版本选择对应方法：
+
+#### **新版界面**（推荐）
+- 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+- 在顶部导航栏点击 **"Account"**（头像旁边）
+- 在左侧菜单选择 **"Account Details"**
+- 复制 **"Account ID"** 字段的值
+
+#### **旧版界面**
+- 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+- 点击页面右侧边栏的 **"Account Details"**（通常在 "Overview" 页面右侧）
+- 复制 **"Account ID"** 字段的值
+
+#### **通用查找方法**
+如果以上方法都找不到，可以：
+1. 在任何页面按 **Ctrl+F** 搜索 "Account ID"
+2. 或者在浏览器地址栏查看 URL 中是否包含你的 ID（如果看到类似 `https://dash.cloudflare.com/209cb0018ea019bf3fec8b8483ab5342/`，中间的部分就是 Account ID）
+
+#### **重要提示**
+- Account ID 是 **32位十六进制字符串**（如：`209cb0018ea019bf3fec8b8483ab5342`）
+- **不要使用浏览器地址栏中的 Zone ID**（通常是域名页面中的 ID）
+- **不要使用 API 返回的其他 ID**
+- 如果 Account details 页面中没有显示，你可能需要：
+  1. 切换界面版本（通常在页面右下角有切换按钮）
+  2. 或者使用 CLI 命令：`curl -X GET "https://api.cloudflare.com/client/v4/accounts" -H "Authorization: Bearer <你的Token>"`
 
 3. **添加到 GitHub Secrets**
    - 进入 GitHub 仓库 → Settings → Secrets and variables → Actions
-   - 点击 "New repository secret"
-   - 添加两个 Secret：
-     - `CLOUDFLARE_API_TOKEN`：粘贴刚才复制的 API Token
-     - `CLOUDFLARE_ACCOUNT_ID`：粘贴账户 ID
+   - **创建第一个 Secret**：
+     - 点击 "New repository secret"
+     - Name: `CLOUDFLARE_API_TOKEN`
+     - Secret: 粘贴刚才复制的 API Token
+     - 点击 "Add secret"
+   - **创建第二个 Secret**：
+     - 再次点击 "New repository secret"
+     - Name: `CLOUDFLARE_ACCOUNT_ID`
+     - Secret: 粘贴 Account ID
+     - 点击 "Add secret"
+   - ⚠️ **注意**：需要分别创建两个独立的 Secret，不能合并到一个 Secret 中
 
 4. **触发部署**
    ```bash
@@ -103,6 +171,16 @@ Cloudflare Pages 提供全球 CDN 加速，访问速度更快。
 5. **查看部署状态**
    - 访问 [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages
    - 点击 `json-crypto` 项目查看部署日志
+
+#### 关于 Cloudflare 账户结构
+- **登录邮箱/用户名**：你登录 Cloudflare 时使用的凭据
+- **账户名称 (Account Name)**：你在 Cloudflare 上创建的账户的名称，可以自定义
+- **账户 ID (Account ID)**：Cloudflare 自动生成的32位十六进制唯一标识符，用于 API 调用
+- **Zone**：对应一个域名（如 example.com）的配置区域
+
+对于 Cloudflare Pages 部署，你只需要：
+1. API Token：具有 `Account → Cloudflare Pages → Edit` 权限
+2. Account ID：从 Account details 区域获取
 
 ### 3. Gitee Pages 部署（可选）
 
@@ -226,8 +304,25 @@ Gitee Pages 适合国内用户，国内访问速度快。
 
 **解决方案**：
 1. 检查 API Token 权限是否包含 "Account → Cloudflare Pages → Edit"
-2. 检查 Account ID 是否正确
+2. 检查 Account ID 是否正确（必须使用 Account details 中的 Account ID，不是 Zone ID）
 3. 确认 Secrets 中没有多余的空格
+4. 确认创建了两个独立的 Secrets：`CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`
+
+**问题**：找不到 Account ID
+
+**解决方案**：
+1. **切换界面版本**：如果当前是新版界面，尝试切换到旧版界面
+2. **使用直接链接**：访问 https://dash.cloudflare.com/profile/account（新版）或 https://dash.cloudflare.com/profile/account/details（旧版）
+3. **使用 API 获取**：
+   ```bash
+   # 使用 curl 获取账户信息
+   curl -X GET "https://api.cloudflare.com/client/v4/accounts" \
+     -H "Authorization: Bearer YOUR_API_TOKEN" \
+     -H "Content-Type: application/json"
+   ```
+   返回结果中的 `"id"` 字段就是 Account ID
+4. **查看账户概览**：登录后直接访问 https://dash.cloudflare.com/，在页面最上方或 URL 中查找 Account ID
+5. **检查邮件**：查找 Cloudflare 发送的欢迎邮件或通知邮件，通常包含 Account ID
 
 ### Gitee Pages 部署失败
 
