@@ -55,7 +55,7 @@ https://<你的用户名>.github.io/json-crypto/
 - **Cloudflare Pages**：全球 CDN 加速（需配置 API Token）
 - **Gitee Pages**：国内访问快速（需手动或自动同步）
 
-详细配置方法请参阅 [docs/multi-platform-deployment.md](docs/multi-platform-deployment.md)
+详细配置方法请参阅 [docs/deployment.md](docs/deployment.md)
 
 ## 故障排查
 

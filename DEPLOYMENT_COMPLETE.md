@@ -41,7 +41,7 @@
 - **适合**：快速上手
 
 #### 详细部署指南
-- **文件**：`docs/multi-platform-deployment.md`
+- **文件**：`docs/deployment.md`
 - **内容**：完整的部署说明、故障排查、高级配置
 - **适合**：深入了解部署流程
 
@@ -202,7 +202,7 @@ git push origin main
 ## 📚 相关文档
 
 - [快速配置指南](QUICK_SETUP.md) - 10-15 分钟完成配置
-- [多平台部署指南](docs/multi-platform-deployment.md) - 详细说明和故障排查
+- [多平台部署指南](docs/deployment.md) - 详细说明和故障排查
 - [问题解决文档](SOLVE_GITHUB_PAGES_ISSUE.md) - 常见问题解决方案
 - [README.md](README.md) - 项目总体说明
 

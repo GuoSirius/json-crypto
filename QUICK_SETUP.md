@@ -239,7 +239,7 @@ git push origin main
 3. **自动部署**：每次推送代码，三个平台都会自动更新
 
 详细配置说明请参阅：
-- [多平台部署指南](docs/multi-platform-deployment.md)
+- [多平台部署指南](docs/deployment.md)
 - [README.md](README.md)
 
 ---
@@ -249,7 +249,7 @@ git push origin main
 如果遇到问题，请：
 
 1. 查看 [GitHub Actions 日志](https://github.com/你的用户名/json-crypto/actions)
-2. 检查 [多平台部署指南](docs/multi-platform-deployment.md) 中的故障排查部分
+2. 检查 [多平台部署指南](docs/deployment.md) 中的故障排查部分
 3. 查阅 [SOLVE_GITHUB_PAGES_ISSUE.md](SOLVE_GITHUB_PAGES_ISSUE.md)
 
 ---

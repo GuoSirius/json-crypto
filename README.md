@@ -11,6 +11,7 @@
 ## 功能特性
 
 ### 数据处理
+
 - **多种输入方式**：拖拽上传 JSON 文件或直接粘贴 JSON 文本
 - **JSON 格式化**：美化 JSON 格式，支持带引号输出
 - **JSON 压缩**：去除空白字符，减小文件体积
@@ -19,6 +20,7 @@
 - **加引号选项**：支持为加密结果添加外层引号
 
 ### 文件管理
+
 - **多文件支持**：同时上传和处理多个 JSON 文件
 - **文件去重**：基于文件名 + MD5 哈希自动去重
 - **文件筛选**：全部 / 待加密 / 待解密 / 未加密 / 未解密
@@ -58,7 +60,7 @@
 
 ## 项目结构
 
-```
+```bash
 json-crypto/
 ├── .github/workflows/
 │   ├── deploy.yml              # CI/CD 工作流（测试 + GitHub Pages + Cloudflare Pages 部署）
@@ -99,12 +101,12 @@ json-crypto/
 │   │   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
 │   │   └── ProcessView.vue     # 处理页（集成所有功能）
 │   ├── assets/                 # 静态资源
-│   └── __tests__/              # 测试文件（18 个文件，264 个用例）
+│   └── __tests__/              # 测试文件（17 个文件，366 个用例）
 ├── docs/
-│   ├── deployment-guide.md     # 详细部署指南
-│   ├── docker-guide.md         # Docker 快速开始指南
-│   ├── test-analysis-report.md # 测试问题分析报告
-│   └── test-coverage-analysis.md # 测试覆盖率分析报告
+│   ├── deployment.md           # 完整的多平台部署指南
+│   ├── docker.md               # Docker 容器化部署指南
+│   ├── troubleshooting.md      # 常见问题解决方案
+│   └── testing.md              # 测试覆盖率分析和技术报告
 ├── vite.config.ts              # Vite 配置（动态 base）
 ├── uno.config.ts               # UnoCSS 配置
 ├── tsconfig.json               # TypeScript 配置
@@ -177,15 +179,15 @@ pnpm run preview
 ### Git Hooks
 项目配置了 husky pre-commit hook，每次提交前自动运行：
 - `vue-tsc -b`（TypeScript 类型检查）
-- `vitest run`（264 个单元测试）
+- `vitest run`（366 个单元测试）
 
 ### 测试覆盖
-- **12 个测试文件**，**264 个测试用例**，全部通过
+- **17 个测试文件**，**366 个测试用例**，全部通过
 - 覆盖全部工具函数、状态管理、组件和视图页面
-- 总体覆盖率约 **90%**
-- 测试执行时间约 **3-4 秒**
+- 总体覆盖率约 **98%**
+- 测试执行时间约 **8-14 秒**
 
-详见 [测试覆盖率分析报告](docs/test-coverage-analysis.md) 和 [测试问题分析报告](docs/test-analysis-report.md)。
+详见 [测试文档](docs/testing.md)。
 
 ## 部署
 
@@ -199,7 +201,7 @@ pnpm run preview
 
 #### 首次配置
 
-> 详细步骤和图解请参阅 [多平台部署指南](docs/multi-platform-deployment.md)。
+> 详细步骤和图解请参阅 [多平台部署指南](docs/deployment.md)。
 
 ##### 1. GitHub Pages 配置（必需）
 
@@ -240,7 +242,7 @@ pnpm run preview
 
 如果需要部署到 Gitee Pages（国内访问速度快）：
 
-**方式一：自动部署（推荐）**
+##### 推荐部署方式（自动）
 
 1. 在 Gitee 创建个人访问令牌（Settings → 私人令牌）
    - **必须勾选权限**：✅ **projects**（仓库权限）
@@ -251,29 +253,29 @@ pnpm run preview
    - `GITEE_USERNAME`：你的 Gitee 用户名
    - `GITEE_REPO`：你的 Gitee 仓库名称（如 `json-crypto`）
 
-**方式二：手动部署**
+##### 简单手动部署
 
 1. 克隆 Gitee 仓库并运行 `scripts/deploy-gitee.sh`
 2. **在 Gitee 仓库启用 Pages 服务**：
-   
+
    **方法一：通过「服务」菜单（推荐）**
    1. 访问 Gitee 仓库：`https://gitee.com/你的用户名/json-crypto`
    2. 点击顶部或侧边的「**服务**」菜单
    3. 进入「服务列表」或「服务集市」
    4. 查找「**Gitee Pages**」或「静态页面」服务
    5. 如果看不到「配置页面」，点击「**开启**」或「**启用**」按钮开启服务
-   
+
    **方法二：通过「管理」页面**
    1. 访问 Gitee 仓库：`https://gitee.com/你的用户名/json-crypto`
    2. 点击右上角的「**管理**」按钮
    3. 在左侧菜单中找到「**Gitee Pages**」
-   
+
    **配置步骤**：
    - **部署分支**：选择 `main` 分支
    - **部署目录**：选择 `/`（根目录）
    - 点击「**启动**」按钮启用服务
    - 点击「**更新**」按钮手动更新（首次和后续都需要）
-   
+
    > **注意**：如果找不到菜单，尝试直接访问：`https://gitee.com/你的用户名/json-crypto/pages`
 
 #### 查看部署状态
@@ -292,19 +294,22 @@ pnpm run preview
 
 如果只需要 GitHub Pages，跳过此步骤。如果需要国内访问速度快，可以部署到 Gitee Pages：
 
-**方式一：手动部署（推荐小白）**
+##### 手动部署（推荐小白）
 
 1. **克隆仓库到本地**
+
    ```bash
    git clone https://gitee.com/你的用户名/json-crypto.git
    cd json-crypto
    ```
 
 2. **运行部署脚本**
+
    ```bash
    chmod +x scripts/deploy-gitee.sh
    ./scripts/deploy-gitee.sh
    ```
+
    脚本会自动构建并推送到 `gh-pages` 分支。
 
 3. **启用 Gitee Pages**
@@ -319,7 +324,7 @@ pnpm run preview
    - 部署成功后，页面会显示访问地址
    - 格式：`https://你的用户名.gitee.io/json-crypto/`
 
-**方式二：自动部署（需要阿里云云效）**
+##### 自动部署（需要阿里云云效）
 
 如果希望每次推送自动部署到 Gitee，可以使用阿里云云效：
 1. 注册/登录 [云效](https://flow.aliyun.com/)
@@ -375,7 +380,7 @@ pnpm run preview
 
 > 配置完成后，每次推送代码到 `main` 分支，两个平台都会自动更新。
 
-#### 查看部署状态
+#### 验证部署结果
 
 - **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
 - **Cloudflare Pages**：Cloudflare Dashboard → Pages → 点击项目查看部署日志
@@ -400,19 +405,23 @@ pnpm run preview
    创建完成后，返回 GitHub Actions 重新运行失败的 workflow
 
 2. **使用诊断脚本检查问题**：
+
    ```bash
    chmod +x scripts/diagnose-cloudflare.sh
    ./scripts/diagnose-cloudflare.sh
    ```
 
 3. **使用增强版部署脚本**：
+
    ```bash
    chmod +x scripts/deploy-cloudflare.sh
    ./scripts/deploy-cloudflare.sh
    ```
+
    > 该脚本会自动检查并引导创建 Cloudflare 项目
 
 4. **修改项目名称**（如果名称被占用）：
+
    - 编辑 `.github/workflows/deploy.yml`
    - 修改第 147 行：`--project-name=json-crypto`
    - 改为：`--project-name=your-custom-name`
@@ -499,8 +508,7 @@ docker run -d -p 8080:80 json-crypto
 docker compose --profile production up -d
 ```
 
-> 详细使用说明请参阅 [Docker 快速开始](docs/docker-guide.md)。
-
+> 详细使用说明请参阅 [Docker 快速开始](docs/docker.md)。
 
 ---
 
@@ -514,7 +522,7 @@ docker compose --profile production up -d
 | 本地预览 | `/` | 无需 | 无 |
 | Docker/Nginx | `/` | 需配置 nginx | 需配置 nginx.conf |
 
-详细部署指南请参阅 [docs/deployment-guide.md](docs/deployment-guide.md)。
+详细部署指南请参阅 [docs/deployment.md](docs/deployment.md)。
 
 ## 开发指南
 
@@ -534,7 +542,7 @@ docker compose --profile production up -d
 
 ### CI/CD 流程
 
-```
+```bash
 开发者提交代码
   ↓
 pre-commit hook: type-check + test
