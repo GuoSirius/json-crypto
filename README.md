@@ -176,8 +176,11 @@ pnpm run preview
 推送代码到 `main` 分支后，GitHub Actions 会自动：
 1. 运行类型检查和单元测试
 2. 测试通过后并行部署到 **GitHub Pages** 和 **Cloudflare Pages**
+3. Gitee Pages 需手动或使用阿里云云效自动部署
 
 #### 首次配置（必做）
+
+> 详细步骤和图解请参阅 [详细部署指南](docs/deployment-guide.md)。
 
 ##### GitHub Pages 配置步骤
 
@@ -347,14 +350,15 @@ VITE_BASE=/<repo>/ pnpm run build
 
 ```bash
 # 方式一：使用 docker-compose（推荐）
-# 生产部署
-docker-compose up -d
 
-# 开发模式（热更新）
-docker-compose --profile dev up -d
+# 生产部署（访问 http://localhost:8080）
+podman compose --profile production up -d
 
-# 仅构建
-docker-compose --profile build up
+# 开发模式（热更新，访问 http://localhost:5173）
+podman compose --profile dev up -d
+
+# 仅构建（产物在 dist/）
+podman compose --profile build up
 
 # 方式二：手动构建
 # 构建镜像
@@ -365,9 +369,11 @@ docker run -d -p 8080:80 json-crypto
 
 # 访问 http://localhost:8080
 
-# Podman 替代方案
-podman-compose up -d
+# Docker 替代
+docker compose --profile production up -d
 ```
+
+> 详细使用说明请参阅 [Docker 快速开始](docs/docker-guide.md)。
 
 
 ---
