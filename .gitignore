@@ -149,4 +149,4 @@ dist/
 .pnpm-store/
 
 # CodeBuddy
-.codebuddy/
+# .codebuddy/
