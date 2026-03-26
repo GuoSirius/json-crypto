@@ -85,49 +85,9 @@
 **解决方案**:
 1. **新版界面**：Workers & Pages → 右侧 Account ID
 2. **旧版界面**：右下角 Account ID
-3. **直接访问**：https://dash.cloudflare.com/?to=/:account/workers
+3. **直接访问**：https://dash.cloudflare.com/?to=/:account/workflows
 
-### Gitee Pages 部署失败
-
-#### 错误：找不到 Gitee Pages 配置页面
-**症状**: 在 Gitee 仓库中找不到 Pages 配置
-
-**解决方案**:
-1. **通过「服务」菜单进入**：
-   - 访问仓库：`https://gitee.com/你的用户名/json-crypto`
-   - 点击「服务」菜单（顶部或侧边）
-   - 在服务列表中找到「Gitee Pages」
-   - 如果看不到，点击「开启服务」
-
-2. **直接访问链接**：
-   ```
-   https://gitee.com/你的用户名/json-crypto/pages
-   ```
-
-3. **检查服务状态**：
-   - 访问：`https://gitee.com/你的用户名/json-crypto/settings`
-   - 查找「服务管理」或「已开启服务」
-
-#### 错误：Token 权限不足
-**症状**: Authentication failed
-
-**解决方案**:
-1. 重新创建 Gitee Token：
-   - 必须勾选 `projects` 权限
-   - 可选勾选 `pull_requests`, `issues`
-
-2. 更新 GitHub Secrets：
-   - `GITEE_TOKEN`
-   - `GITEE_USERNAME`
-   - `GITEE_REPO`
-
-#### 错误：仓库不存在
-**症状**: Repository not found
-
-**解决方案**:
-1. 在 Gitee 创建同名仓库：`json-crypto`
-2. 确保仓库为公开仓库
-3. 更新 `GITEE_REPO` Secret
+## 构建问题
 
 ## 构建问题
 
@@ -176,12 +136,6 @@
 3. 等待 2-5 分钟缓存更新
 4. 按 Ctrl+F5 强制刷新
 
-#### Gitee Pages
-1. 检查 `VITE_BASE` 配置：`/`
-2. 在 Gitee Pages 页面点击「更新」
-3. 等待 2-5 分钟缓存更新
-4. 按 Ctrl+F5 强制刷新
-
 ### 错误：路由失效
 **症状**: 点击页面链接后显示 404
 
@@ -190,7 +144,6 @@
 2. 检查对应平台的回退文件：
    - GitHub Pages: `404.html`
    - Cloudflare Pages: `_redirects`
-   - Gitee Pages: 自动支持
 
 ### 错误：样式丢失
 **症状**: 页面样式不正确
@@ -238,23 +191,6 @@
 2. 等待 5-10 分钟
 3. 重新部署
 
-### Gitee Pages 特定问题
-
-#### 错误：手动更新需求
-**症状**: 每次部署后需要手动点击「更新」
-
-**解决方案**:
-1. 这是 Gitee Pages 免费版的限制
-2. 每次部署后手动点击「更新」按钮
-3. 等待 2-5 分钟
-
-#### 错误：国内访问限制
-**症状**: 国外访问速度慢
-
-**解决方案**:
-1. 使用 GitHub Pages 或 Cloudflare Pages 作为主站点
-2. Gitee Pages 作为国内备用站点
-
 ## 诊断工具
 
 项目提供了多个诊断脚本帮助排查问题：
@@ -266,11 +202,6 @@
 
 # Windows PowerShell
 .\scripts\diagnose-cloudflare.ps1
-```
-
-### Gitee 诊断
-```bash
-./scripts/diagnose-gitee.sh
 ```
 
 ### 通用诊断
@@ -298,14 +229,8 @@ echo $VITE_BASE
 
 ### 方案2：手动部署
 ```bash
-# GitHub Pages
-./scripts/deploy-github.sh
-
 # Cloudflare Pages
 ./scripts/deploy-cloudflare.sh
-
-# Gitee Pages
-./scripts/deploy-gitee.sh
 ```
 
 ### 方案3：联系支持

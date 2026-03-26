@@ -63,66 +63,68 @@
 ```bash
 json-crypto/
 ├── .github/workflows/
-│   ├── deploy.yml              # CI/CD 工作流（测试 + GitHub Pages + Cloudflare Pages 部署）
-│   └── deploy-gitee.yml        # Gitee Pages 自动部署工作流
+│   └── deploy.yml              # CI/CD 工作流（测试 + GitHub Pages + Cloudflare Pages 部署）
 ├── scripts/
 │   ├── build-and-preview.sh    # 本地构建 + 预览
 │   ├── deploy-cloudflare.sh    # 手动部署 Cloudflare Pages
-│   ├── deploy-gitee.sh         # 手动部署 Gitee Pages
-│   ├── diagnose-cloudflare.sh  # Cloudflare Pages 部署问题诊断
-│   └── diagnose-gitee.sh       # Gitee Pages 部署问题诊断
+│   └── diagnose-cloudflare.sh  # Cloudflare Pages 部署问题诊断
 ├── public/
 │   ├── 404.html                # GitHub Pages SPA 回退
 │   ├── _redirects              # Cloudflare Pages SPA 回退
 │   └── favicon.svg             # 网站图标
 ├── src/
-│   ├── main.ts                 # 应用入口
-│   ├── App.vue                 # 根组件
-│   ├── style.css               # 全局主题样式（亮色/暗黑）
-│   ├── vite-env.d.ts           # Vite 类型声明
-│   ├── types/
-│   │   └── index.ts            # TypeScript 类型定义
-│   ├── utils/
-│   │   ├── crypto.ts           # 加密/解密封装（6 种算法）
-│   │   ├── json.ts             # JSON 格式化/压缩/验证
-│   │   ├── db.ts               # IndexedDB 持久化
-│   │   ├── download.ts         # 文件下载 + ZIP 打包
-│   │   └── uuid.ts             # UUID v4 生成
-│   ├── stores/
-│   │   └── jsonStore.ts        # 全局状态管理 + 自动持久化
+│   ├── __tests__/              # 测试文件（18 个文件，366 个用例）
+│   ├── assets/                 # 静态资源
+│   ├── components/             # Vue 组件
+│   │   ├── BatchAction.vue     # 批量处理 + ZIP 下载
+│   │   ├── CryptoConfig.vue    # 算法选择 + 模式切换 + 密钥输入
+│   │   ├── FileList.vue        # 文件列表（筛选 + 搜索）
+│   │   ├── JsonEditor.vue      # JSON 编辑器（复制/下载/加密/解密）
+│   │   ├── ThemeToggle.vue     # 主题切换按钮
+│   │   └── ToolBar.vue         # 格式化/压缩按钮
 │   ├── composables/
 │   │   └── useTheme.ts         # 主题切换 composable
 │   ├── router/
 │   │   └── index.ts            # 路由配置 + 导航守卫
-│   ├── components/
-│   │   ├── FileList.vue        # 文件列表（筛选 + 搜索）
-│   │   ├── JsonEditor.vue      # JSON 编辑器（复制/下载/加密/解密）
-│   │   ├── ToolBar.vue         # 格式化/压缩按钮
-│   │   ├── CryptoConfig.vue    # 算法选择 + 模式切换 + 密钥输入
-│   │   ├── BatchAction.vue     # 批量处理 + ZIP 下载
-│   │   └── ThemeToggle.vue     # 主题切换按钮
+│   ├── stores/
+│   │   └── jsonStore.ts        # 全局状态管理 + 自动持久化
+│   ├── types/
+│   │   └── index.ts            # TypeScript 类型定义
+│   ├── utils/
+│   │   ├── crypto.ts           # 加密/解密封装（6 种算法）
+│   │   ├── db.ts               # IndexedDB 持久化
+│   │   ├── download.ts         # 文件下载 + ZIP 打包
+│   │   ├── json.ts             # JSON 格式化/压缩/验证
+│   │   └── uuid.ts             # UUID v4 生成
 │   ├── views/
-│   │   ├── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
-│   │   └── ProcessView.vue     # 处理页（集成所有功能）
-│   ├── assets/                 # 静态资源
-│   └── __tests__/              # 测试文件（18 个文件，366 个用例）
+│   │   ├── ProcessView.vue     # 处理页（集成所有功能）
+│   │   └── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
+│   ├── App.vue                 # 根组件
+│   ├── main.ts                 # 应用入口
+│   ├── style.css               # 全局主题样式（亮色/暗黑）
+│   └── vite-env.d.ts           # Vite 类型声明
 ├── docs/
 │   ├── README.md               # 文档首页
 │   ├── deployment.md           # 完整的多平台部署指南
 │   ├── docker.md               # Docker 容器化部署指南
-│   ├── troubleshooting.md      # 常见问题解决方案
-│   └── testing.md              # 测试覆盖率分析和技术报告
-├── vite.config.ts              # Vite 配置（动态 base）
-├── uno.config.ts               # UnoCSS 配置
-├── tsconfig.json               # TypeScript 配置
-├── tsconfig.app.json           # 应用 TypeScript 配置
-├── tsconfig.node.json          # Node 环境 TypeScript 配置
-├── package.json                # 项目依赖和脚本
-├── pnpm-lock.yaml              # pnpm 锁文件
+│   ├── testing.md              # 测试覆盖率分析和技术报告
+│   └── troubleshooting.md      # 常见问题解决方案
+├── dist/                       # 构建产物目录
+├── build_check.txt             # 构建检查文件
 ├── docker-compose.yml          # Docker Compose 配置
 ├── Dockerfile                  # Docker 镜像构建
+├── index.html                  # HTML 入口
 ├── nginx.conf                  # Nginx 配置
-└── index.html                  # HTML 入口
+├── package.json                # 项目依赖和脚本
+│   ├── pnpm-lock.yaml          # pnpm 锁文件
+│   ├── QUICK_SETUP.md          # 快速开始指南
+│   ├── README.md               # 项目说明
+│   ├── SOLVE_GITHUB_PAGES_ISSUE.md  # GitHub Pages 问题解决方案
+│   ├── tsconfig.app.json       # 应用 TypeScript 配置
+│   ├── tsconfig.json           # TypeScript 配置
+│   ├── tsconfig.node.json      # Node 环境 TypeScript 配置
+│   ├── uno.config.ts           # UnoCSS 配置
+│   └── vite.config.ts          # Vite 配置（动态 base）
 ```
 
 ## 快速开始
@@ -196,13 +198,15 @@ pnpm run preview
 
 ## 部署
 
-本项目支持同时部署到 **GitHub Pages**、**Cloudflare Pages** 和 **Gitee Pages** 三个平台。
+本项目支持同时部署到 **GitHub Pages** 和 **Cloudflare Pages**。
+
+> ⚠️ **注意**：Gitee Pages 服务目前可能不可用或位置变更，已从自动部署中移除。如需部署到 Gitee，请参考手动部署部分。
 
 ### 自动部署（推荐）
 
 推送代码到 `main` 分支后，GitHub Actions 会自动：
 1. 运行类型检查和单元测试
-2. 测试通过后并行部署到 **GitHub Pages**、**Cloudflare Pages** 和 **Gitee Pages**
+2. 测试通过后并行部署到 **GitHub Pages** 和 **Cloudflare Pages**
 
 #### 首次配置
 
@@ -243,103 +247,16 @@ pnpm run preview
      - `CLOUDFLARE_API_TOKEN`：粘贴 API Token
      - `CLOUDFLARE_ACCOUNT_ID`：粘贴账户 ID
 
-##### 3. Gitee Pages 配置（可选）
-
-如果需要部署到 Gitee Pages（国内访问速度快）：
-
-##### 推荐部署方式（自动）
-
-1. 在 Gitee 创建个人访问令牌（Settings → 私人令牌）
-   - **必须勾选权限**：✅ **projects**（仓库权限）
-   - **可选权限**：pull_requests, issues 等
-   - 复制生成的令牌（只显示一次）
-2. 在 GitHub 仓库添加 Secrets：
-   - `GITEE_TOKEN`：Gitee 个人访问令牌
-   - `GITEE_USERNAME`：你的 Gitee 用户名
-   - `GITEE_REPO`：你的 Gitee 仓库名称（如 `json-crypto`）
-
-##### 简单手动部署
-
-1. 克隆 Gitee 仓库并运行 `scripts/deploy-gitee.sh`
-2. **在 Gitee 仓库启用 Pages 服务**：
-
-   **方法一：通过「服务」菜单（推荐）**
-   1. 访问 Gitee 仓库：`https://gitee.com/你的用户名/json-crypto`
-   2. 点击顶部或侧边的「**服务**」菜单
-   3. 进入「服务列表」或「服务集市」
-   4. 查找「**Gitee Pages**」或「静态页面」服务
-   5. 如果看不到「配置页面」，点击「**开启**」或「**启用**」按钮开启服务
-
-   **方法二：通过「管理」页面**
-   1. 访问 Gitee 仓库：`https://gitee.com/你的用户名/json-crypto`
-   2. 点击右上角的「**管理**」按钮
-   3. 在左侧菜单中找到「**Gitee Pages**」
-
-   **配置步骤**：
-   - **部署分支**：选择 `main` 分支
-   - **部署目录**：选择 `/`（根目录）
-   - 点击「**启动**」按钮启用服务
-   - 点击「**更新**」按钮手动更新（首次和后续都需要）
-
-   > **注意**：如果找不到菜单，尝试直接访问：`https://gitee.com/你的用户名/json-crypto/pages`
-
 #### 查看部署状态
 
 - **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
+- **GitHub Pages**：仓库页面 → Settings → Pages → 查看部署状态
 - **Cloudflare Pages**：Cloudflare Dashboard → Pages → 查看部署日志
-- **Gitee Pages**：Gitee 仓库 → 管理 → Gitee Pages → 查看部署状态
 
 #### 访问地址
 
 - **GitHub Pages**：`https://<你的用户名>.github.io/json-crypto/`
 - **Cloudflare Pages**：`https://json-crypto.pages.dev/`（或自定义域名）
-- **Gitee Pages**：`https://<你的用户名>.gitee.io/json-crypto/`
-
-##### Gitee Pages 配置步骤（可选，适合国内用户）
-
-如果只需要 GitHub Pages，跳过此步骤。如果需要国内访问速度快，可以部署到 Gitee Pages：
-
-##### 手动部署（推荐小白）
-
-1. **克隆仓库到本地**
-
-   ```bash
-   git clone https://gitee.com/你的用户名/json-crypto.git
-   cd json-crypto
-   ```
-
-2. **运行部署脚本**
-
-   ```bash
-   chmod +x scripts/deploy-gitee.sh
-   ./scripts/deploy-gitee.sh
-   ```
-
-   脚本会自动构建并推送到 `gh-pages` 分支。
-
-3. **启用 Gitee Pages**
-   - 进入 Gitee 仓库页面
-   - 点击「管理」
-   - 在左侧菜单找到「Gitee Pages」
-   - 选择分支：`gh-pages`
-   - 点击「启动」
-   - 等待部署完成
-
-4. **获取访问地址**
-   - 部署成功后，页面会显示访问地址
-   - 格式：`https://你的用户名.gitee.io/json-crypto/`
-
-##### 自动部署（需要阿里云云效）
-
-如果希望每次推送自动部署到 Gitee，可以使用阿里云云效：
-1. 注册/登录 [云效](https://flow.aliyun.com/)
-2. 创建新流水线 → 选择「构建静态网站」
-3. 配置 Gitee 仓库和分支（选择 main）
-4. 设置构建命令：`pnpm install && pnpm run build`
-5. 设置部署分支：`gh-pages`
-6. 启用流水线
-
-> **注意**：Gitee Pages 免费版每次更新需要手动刷新，或使用云效自动刷新。
 
 ##### Cloudflare Pages 配置步骤（可选）
 
@@ -374,22 +291,18 @@ pnpm run preview
 4. **创建 Cloudflare Pages 项目（首次）**
    - 登录 [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages
    - 点击 "Create a project"
-   - 选择 "Connect to Git"
-   - 选择你的 GitHub 仓库
-   - 在 "Production branch" 输入 `main`
-   - 在 "Build settings" 中：
-     - Build command: （留空）
-     - Build output directory: （留空，使用默认）
-   - 点击 "Save and Deploy"
+   - 选择 "Direct Upload"（上传资源）
+   - 项目名称填写：`json-crypto`
+   - 点击 "Create project"
    - **后续**：GitHub Actions 会自动部署，不再需要手动操作
 
-> 配置完成后，每次推送代码到 `main` 分支，两个平台都会自动更新。
+> 配置完成后，每次推送代码到 `main` 分支，GitHub Pages 和 Cloudflare Pages 都会自动更新。
 
 #### 验证部署结果
 
 - **GitHub Actions**：仓库页面 → Actions 标签 → 查看部署 job 状态
+- **GitHub Pages**：仓库页面 → Settings → Pages → 查看部署状态
 - **Cloudflare Pages**：Cloudflare Dashboard → Pages → 点击项目查看部署日志
-- **Gitee Pages**：Gitee 仓库 → 管理 → Gitee Pages → 查看部署状态
 
 #### 解决 Cloudflare Pages 部署失败
 
@@ -450,18 +363,10 @@ npm install -g pnpm
 # 进入项目目录
 cd json-crypto
 
-# 构建并部署到 GitHub Pages（手动gh CLI部署）
-chmod +x scripts/deploy-github.sh
-./scripts/deploy-github.sh
-
 # 构建并部署到 Cloudflare Pages（需先安装 wrangler）
 pnpm add -D wrangler
 chmod +x scripts/deploy-cloudflare.sh
 ./scripts/deploy-cloudflare.sh
-
-# 构建并部署到 Gitee Pages（自动创建 gh-pages 分支）
-chmod +x scripts/deploy-gitee.sh
-./scripts/deploy-gitee.sh
 
 # 本地构建 + 预览（默认 base: /）
 chmod +x scripts/build-and-preview.sh
@@ -470,6 +375,8 @@ chmod +x scripts/build-and-preview.sh
 # 本地构建 + 预览（GitHub Pages 模式，base: /<repo>/）
 ./scripts/build-and-preview.sh github
 ```
+
+> **注意**：GitHub Pages 通过 GitHub Actions 自动部署，无需手动脚本。
 
 #### 方式二：手动构建
 
@@ -522,7 +429,6 @@ docker compose --profile production up -d
 | 平台 | base 配置 | 路由回退 | 首次配置 |
 |------|-----------|----------|----------|
 | GitHub Pages | `/<repo>/` | `404.html` | Settings → Pages → GitHub Actions |
-| Gitee Pages | `/` | 自动支持 | 管理 → Gitee Pages → 启动 |
 | Cloudflare Pages | `/` | `_redirects` | 需要 API Token + Account ID |
 | 本地预览 | `/` | 无需 | 无 |
 | Docker/Nginx | `/` | 需配置 nginx | 需配置 nginx.conf |

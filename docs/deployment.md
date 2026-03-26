@@ -11,7 +11,7 @@
 
 ## 部署架构
 
-本项目支持同时部署到三个平台：
+本项目支持同时部署到两个平台：
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -26,13 +26,14 @@
               │  GitHub Actions    │
               └─────────┬──────────┘
                         │
-        ┌───────────────┼───────────────┐
-        │               │               │
-        ▼               ▼               ▼
-┌──────────────┐ ┌──────────┐ ┌──────────────┐
-│ GitHub Pages │ │Cloudflare│ │  Gitee Pages │
-│   (全球)     │ │  Pages   │ │   (国内)     │
-└──────────────┘ └──────────┘ └──────────────┘
+              ┌─────────┴─────────┐
+              │                   │
+              ▼                   ▼
+┌──────────────┐      ┌──────────┐
+│ GitHub Pages │      │Cloudflare │
+│   (全球)     │      │  Pages   │
+└──────────────┘      │ (全球CDN) │
+                      └──────────┘
 ```
 
 ## 快速开始
@@ -111,43 +112,6 @@ Cloudflare Pages 提供全球 CDN 加速，访问速度更快。
    https://json-crypto.pages.dev/
    ```
 
-### 3. Gitee Pages 部署（可选）
-
-Gitee Pages 适合国内用户快速访问。
-
-#### 配置步骤
-1. **创建 Gitee 仓库**
-   - 在 Gitee 创建同名仓库：`json-crypto`
-   - 确保仓库为公开仓库
-
-2. **获取 Gitee Token**
-   - 登录 Gitee → 设置 → 私人令牌
-   - 创建新令牌，**必须勾选** `projects` 权限
-   - 复制生成的 Token（只显示一次）
-
-3. **配置 GitHub Secrets**
-   - 进入 GitHub 仓库 → Settings → Secrets and variables → Actions
-   - 添加三个 Secret：
-     - `GITEE_TOKEN`: Gitee 个人访问令牌
-     - `GITEE_USERNAME`: 你的 Gitee 用户名
-     - `GITEE_REPO`: Gitee 仓库名称（`json-crypto`）
-
-4. **开启 Gitee Pages 服务**
-   - 访问 Gitee 仓库：`https://gitee.com/你的用户名/json-crypto`
-   - 点击「服务」菜单（顶部或侧边）
-   - 在服务列表中找到「Gitee Pages」
-   - 如果看不到，点击「开启服务」
-   - 配置：
-     - 部署分支：`main`
-     - 部署目录：`/`（根目录）
-   - 点击「启动」
-   - 点击「更新」开始首次部署
-
-5. **访问站点**
-   ```
-   https://你的用户名.gitee.io/json-crypto/
-   ```
-
 ## 详细配置
 
 ### 构建配置说明
@@ -158,7 +122,6 @@ Gitee Pages 适合国内用户快速访问。
 |------|---------------|------|
 | GitHub Pages | `/<repo>/` | 需要子路径 |
 | Cloudflare Pages | `/` | 根路径 |
-| Gitee Pages | `/` | 根路径 |
 | 本地开发 | `/` | 根路径 |
 
 ### SPA 路由回退
@@ -213,22 +176,6 @@ VITE_DEFAULT_KEY=your-default-key
 2. 确保项目名称为 `json-crypto`
 3. 或修改 workflow 中的项目名称
 
-### Gitee Pages 部署失败
-
-**问题**: 找不到 Gitee Pages 配置页面
-
-**解决方案**:
-1. 通过「服务」菜单进入
-2. 可能需要先「开启服务」
-3. 尝试直接访问：`https://gitee.com/你的用户名/json-crypto/pages`
-
-**问题**: 推送失败
-
-**解决方案**:
-1. 检查 Gitee Token 权限是否包含 `projects`
-2. 确认仓库名称正确
-3. 检查 GitHub Secrets 配置
-
 ### 站点访问 404
 
 **问题**: 访问 URL 显示 404
@@ -236,9 +183,8 @@ VITE_DEFAULT_KEY=your-default-key
 **解决方案**:
 1. GitHub Pages: 检查 base 路径是否为 `/<repo>/`
 2. Cloudflare Pages: 检查 `_redirects` 文件是否正确
-3. Gitee Pages: 检查部署目录是否为 `/`
-4. 等待 2-5 分钟缓存更新
-5. 按 Ctrl+F5 强制刷新
+3. 等待 2-5 分钟缓存更新
+4. 按 Ctrl+F5 强制刷新
 
 ## 常见问题
 
@@ -246,10 +192,9 @@ VITE_DEFAULT_KEY=your-default-key
 **A**: 不需要。可以根据需求选择：
 - 仅 GitHub Pages：最简单，全球访问
 - GitHub + Cloudflare：最佳全球体验
-- 全部部署：覆盖所有用户
 
 ### Q2: 部署需要多长时间？
-**A**: 
+**A**:
 - 首次部署：5-10分钟（包括配置）
 - 后续更新：2-3分钟
 - 缓存生效：2-5分钟
@@ -264,7 +209,6 @@ VITE_DEFAULT_KEY=your-default-key
 **A**: 
 - 自动：推送代码到 `main` 分支
 - 手动：运行部署脚本
-- Gitee：需要手动点击「更新」
 
 ### Q5: 如何自定义域名？
 **A**: 
@@ -274,19 +218,17 @@ VITE_DEFAULT_KEY=your-default-key
 
 ## 平台对比
 
-| 特性 | GitHub Pages | Cloudflare Pages | Gitee Pages |
-|------|-------------|------------------|-------------|
-| **全球访问** | ✅ 优秀 | ✅ 优秀 | ⚠️ 一般 |
-| **国内访问** | ⚠️ 一般 | ⚠️ 一般 | ✅ 优秀 |
-| **CDN 加速** | ⚠️ 有限 | ✅ 全球 CDN | ⚠️ 有限 |
-| **自动部署** | ✅ 完全自动 | ✅ 完全自动 | ⚠️ 需手动更新 |
-| **配置复杂度** | ⭐ 简单 | ⭐⭐ 中等 | ⭐⭐⭐ 复杂 |
-| **推荐程度** | ⭐⭐⭐ 必选 | ⭐⭐⭐ 推荐 | ⭐⭐ 可选 |
+| 特性 | GitHub Pages | Cloudflare Pages |
+|------|-------------|------------------|
+| **全球访问** | ✅ 优秀 | ✅ 优秀 |
+| **CDN 加速** | ⚠️ 有限 | ✅ 全球 CDN |
+| **自动部署** | ✅ 完全自动 | ✅ 完全自动 |
+| **配置复杂度** | ⭐ 简单 | ⭐⭐ 中等 |
+| **推荐程度** | ⭐⭐⭐ 必选 | ⭐⭐⭐ 推荐 |
 
 ## 相关资源
 
-- [快速部署指南](../QUICK_SETUP.md) - 10分钟快速部署
-- [部署完成状态](../DEPLOYMENT_COMPLETE.md) - 验证部署
+- [快速部署指南](../QUICK_SETUP.md) - 5分钟快速部署
 - [Docker 部署指南](docker.md) - 容器化部署
 - [故障排查指南](troubleshooting.md) - 详细问题解决
 - [GitHub Actions 配置](../.github/workflows/deploy.yml) - 工作流文件

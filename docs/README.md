@@ -8,8 +8,7 @@
 - **[../README.md](../README.md)** - 项目主文档，包含快速开始、功能说明、部署指南
 
 ### 2. 快速部署
-- **[QUICK_SETUP.md](../QUICK_SETUP.md)** - 10分钟快速部署指南
-- **[DEPLOYMENT_COMPLETE.md](../DEPLOYMENT_COMPLETE.md)** - 部署完成状态和验证
+- **[QUICK_SETUP.md](../QUICK_SETUP.md)** - 5分钟快速部署指南
 
 ### 3. 详细部署指南
 - **[deployment.md](deployment.md)** - 完整的多平台部署指南
@@ -26,8 +25,7 @@
 ### 如果你是新手用户
 1. **开始**：先看 **[README.md](../README.md)** 了解项目
 2. **部署**：按照 **[QUICK_SETUP.md](../QUICK_SETUP.md)** 快速部署
-3. **验证**：检查 **[DEPLOYMENT_COMPLETE.md](../DEPLOYMENT_COMPLETE.md)** 状态
-4. **问题**：遇到问题查 **[troubleshooting.md](troubleshooting.md)**
+3. **问题**：遇到问题查 **[troubleshooting.md](troubleshooting.md)**
 
 ### 如果你是开发者
 1. **完整部署**：查看 **[deployment.md](deployment.md)** 了解完整流程
@@ -37,16 +35,14 @@
 ### 如果你遇到部署问题
 1. **快速解决**：先看 **[troubleshooting.md](troubleshooting.md)** 常见问题
 2. **详细参考**：查看 **[deployment.md](deployment.md)** 中的故障排查
-3. **状态检查**：验证 **[DEPLOYMENT_COMPLETE.md](../DEPLOYMENT_COMPLETE.md)** 中的配置
 
 ## 📁 文件说明
 
 | 文件名 | 用途 | 适合读者 | 阅读时间 |
 |--------|------|----------|----------|
 | `../README.md` | 项目主文档，包含所有基本信息 | 所有用户 | 5-10分钟 |
-| `../QUICK_SETUP.md` | 10分钟快速部署指南 | 新手用户 | 10分钟 |
-| `../DEPLOYMENT_COMPLETE.md` | 部署完成验证和状态检查 | 部署后验证 | 3-5分钟 |
-| `deployment.md` | 完整的多平台部署指南 | 开发者、运维人员 | 15-20分钟 |
+| `../QUICK_SETUP.md` | 5分钟快速部署指南 | 新手用户 | 5分钟 |
+| `deployment.md` | 完整的双平台部署指南 | 开发者、运维人员 | 15-20分钟 |
 | `docker.md` | Docker 容器化部署指南 | 容器化部署用户 | 10-15分钟 |
 | `troubleshooting.md` | 常见问题解决方案 | 遇到问题的用户 | 按需查找 |
 | `testing.md` | 测试覆盖率分析和技术报告 | 开发者、测试人员 | 10-15分钟 |
@@ -56,7 +52,6 @@
 ### 在线演示
 - [GitHub Pages](https://你的用户名.github.io/json-crypto/)
 - [Cloudflare Pages](https://json-crypto.pages.dev/)
-- [Gitee Pages](https://你的用户名.gitee.io/json-crypto/)
 
 ### 项目仓库
 - [GitHub 仓库](https://github.com/你的用户名/json-crypto)
@@ -66,12 +61,8 @@
 # Cloudflare 诊断
 ./scripts/diagnose-cloudflare.sh
 
-# Gitee 诊断
-./scripts/diagnose-gitee.sh
-
 # 部署脚本
 ./scripts/deploy-cloudflare.sh
-./scripts/deploy-gitee.sh
 ```
 
 ## 📞 支持
