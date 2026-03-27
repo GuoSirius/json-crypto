@@ -17,6 +17,8 @@ export interface CryptoConfig {
   wrapWithQuotes: boolean
 }
 
+export type DownloadMode = 'original' | 'processed' | 'both'
+
 export interface StoreData {
   files: JsonFile[]
   activeIndex: number

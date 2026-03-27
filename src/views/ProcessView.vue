@@ -7,7 +7,7 @@ import { useJsonStore } from '../stores/jsonStore'
 import { formatJson, compressJson, isValidJson } from '../utils/json'
 import { processCrypto, detectEncrypted, removeOuterQuotes, calculateMD5 } from '../utils/crypto'
 import { downloadFile, downloadAsZip } from '../utils/download'
-import type { CryptoMode, CryptoAlgorithm } from '../types'
+import type { CryptoMode, CryptoAlgorithm, DownloadMode } from '../types'
 import { cleanData } from '../utils/crypto'
 
 import FileList from '../components/FileList.vue'
@@ -337,15 +337,27 @@ function handleDownloadProcessed() {
   }
 }
 
-function handleDownloadZip() {
+function handleDownloadZip(mode: DownloadMode = 'processed') {
   // 使用过滤后的文件
   const filteredFiles = store.getFilteredFiles()
   if (filteredFiles.length === 0) {
     ElMessage.warning('当前筛选条件下没有可下载的文件')
     return
   }
+
+  // 收集当前编辑框中的内容（可能被用户修改过）
+  const filteredIndexes = store.getFilteredIndexes()
+  const sourceContents = filteredIndexes.map(index => {
+    // 如果是当前选中的文件，使用编辑框中的内容（可能被修改过）
+    if (index === store.state.activeIndex) {
+      return sourceText.value
+    }
+    // 否则使用存储的原始内容
+    return store.state.files[index]?.content || ''
+  })
+
   const cryptoType = store.state.cryptoConfig.mode === 'encrypt' ? '_encrypt' : '_decrypt'
-  downloadAsZip(filteredFiles, cryptoType)
+  downloadAsZip(filteredFiles, sourceContents, mode, cryptoType)
 }
 
 function handleClearProcessed() {
@@ -610,7 +622,8 @@ async function handleBack() {
             :batch-loading="batchLoading"
             :wrap-with-quotes="store.state.cryptoConfig.wrapWithQuotes"
             @batch-process="handleBatchProcess"
-            @download-zip="handleDownloadZip"
+            @download-zip="handleDownloadZip('processed')"
+            @download-zip-with-mode="handleDownloadZip"
             @update:wrap-with-quotes="store.state.cryptoConfig.wrapWithQuotes = $event"
           />
         </div>
