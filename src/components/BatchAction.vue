@@ -45,42 +45,45 @@ function handleDownloadWithMode(mode: DownloadMode) {
       <Layers :size="14" />
       {{ batchLoading ? '处理中...' : '批量处理' }}
     </button>
-    <el-dropdown
-      :disabled="filteredCount < 2"
-      trigger="click"
-      @command="handleDownloadWithMode"
-      popper-class="batch-action-dropdown"
+    <div
+      class="relative flex items-center"
+      :class="{ 'opacity-40 cursor-not-allowed': filteredCount < 2 }"
     >
-      <div class="flex items-center border border-cyan-400 rounded-lg overflow-hidden">
+      <button
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        :disabled="filteredCount < 2"
+        @click="handleDownloadZip"
+      >
+        <FileArchive :size="14" />
+        打包下载 ZIP
+      </button>
+      <el-dropdown
+        :disabled="filteredCount < 2"
+        trigger="click"
+        @command="handleDownloadWithMode"
+        popper-class="batch-action-dropdown"
+      >
         <button
-          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-none bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-          :disabled="filteredCount < 2"
-          @click="handleDownloadZip"
-        >
-          <FileArchive :size="14" />
-          打包下载 ZIP
-        </button>
-        <button
-          class="flex items-center justify-center w-8 h-8 border-l border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          class="absolute right-0 top-0 h-full w-8 flex items-center justify-center border-l border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           :disabled="filteredCount < 2"
         >
           <ChevronDown :size="14" />
         </button>
-      </div>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item command="original" class="text-xs">
-            下载原始内容
-          </el-dropdown-item>
-          <el-dropdown-item command="processed" class="text-xs">
-            下载处理后内容
-          </el-dropdown-item>
-          <el-dropdown-item command="both" class="text-xs">
-            同时下载两种内容
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="original" class="text-xs">
+              下载原始内容
+            </el-dropdown-item>
+            <el-dropdown-item command="processed" class="text-xs">
+              下载处理后内容
+            </el-dropdown-item>
+            <el-dropdown-item command="both" class="text-xs">
+              同时下载两种内容
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 
@@ -109,5 +112,18 @@ function handleDownloadWithMode(mode: DownloadMode) {
 /* 暗黑主题适配 */
 html.dark .batch-action-dropdown {
   --el-dropdown-menu-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 确保按钮样式不被覆盖 */
+:deep(.el-dropdown) {
+  display: inline-block;
+}
+
+:deep(.el-dropdown__trigger) {
+  display: block;
+}
+
+:deep(.el-dropdown__caret-button) {
+  display: none;
 }
 </style>
