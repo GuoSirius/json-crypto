@@ -49,10 +49,11 @@ function handleDownloadWithMode(mode: DownloadMode) {
       :disabled="filteredCount < 2"
       trigger="click"
       @command="handleDownloadWithMode"
+      popper-class="batch-action-dropdown"
     >
-      <el-button-group>
+      <div class="flex items-center border border-cyan-400 rounded-lg overflow-hidden">
         <button
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-l-lg text-xs font-bold border border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-none bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           :disabled="filteredCount < 2"
           @click="handleDownloadZip"
         >
@@ -60,25 +61,53 @@ function handleDownloadWithMode(mode: DownloadMode) {
           打包下载 ZIP
         </button>
         <button
-          class="flex items-center px-2 py-1.5 rounded-r-lg text-xs font-bold border border-l-0 border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          class="flex items-center justify-center w-8 h-8 border-l border-cyan-400 bg-gradient-to-br from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 hover:shadow-xl hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           :disabled="filteredCount < 2"
         >
           <ChevronDown :size="14" />
         </button>
-      </el-button-group>
+      </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="original">
-            <span class="text-xs">下载原始内容</span>
+          <el-dropdown-item command="original" class="text-xs">
+            下载原始内容
           </el-dropdown-item>
-          <el-dropdown-item command="processed">
-            <span class="text-xs">下载处理后内容</span>
+          <el-dropdown-item command="processed" class="text-xs">
+            下载处理后内容
           </el-dropdown-item>
-          <el-dropdown-item command="both">
-            <span class="text-xs">同时下载两种内容</span>
+          <el-dropdown-item command="both" class="text-xs">
+            同时下载两种内容
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
   </div>
 </template>
+
+<style scoped>
+.batch-action-dropdown {
+  --el-dropdown-menu-bg-color: var(--app-card);
+  --el-dropdown-menu-border-color: var(--app-border);
+  --el-dropdown-menu-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.batch-action-dropdown .el-dropdown-menu__item {
+  color: var(--app-text-regular);
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+.batch-action-dropdown .el-dropdown-menu__item:hover {
+  background-color: var(--app-fill);
+  color: var(--app-text-primary);
+}
+
+.batch-action-dropdown .el-dropdown-menu__item:focus {
+  background-color: var(--app-fill);
+}
+
+/* 暗黑主题适配 */
+html.dark .batch-action-dropdown {
+  --el-dropdown-menu-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+</style>
