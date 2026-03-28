@@ -248,6 +248,18 @@ async function handleGoToJsonProcess() {
   const isFileMode = jsonStore.isFileMode()
   const hasExistingData = isFileMode && jsonStore.hasData()
 
+  // JSON处理页无数据时，直接带入，无需确认
+  if (!hasExistingData) {
+    const result = await jsonStore.addFiles(jsonFiles.map(item => item.file), 'excel-import')
+    if (result.addedCount > 0) {
+      ElMessage.success(`已带入 ${result.addedCount} 个工作表`)
+    }
+    // 强制确保数据持久化到IndexedDB后再跳转
+    await jsonStore.persist()
+    router.push('/json/process')
+    return
+  }
+
   // 设置待处理的数据
   pendingJsonFiles.value = jsonFiles
   pendingValidCount.value = validSheets.length
