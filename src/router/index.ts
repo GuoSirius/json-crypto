@@ -27,6 +27,11 @@ const router = createRouter({
       name: 'ExcelProcess',
       component: () => import('../views/excel-process-view/ExcelProcessView.vue'),
     },
+    // 路由兜底：匹配所有未定义的路由，跳转到 JSON 上传页
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/json/upload',
+    },
   ],
 })
 

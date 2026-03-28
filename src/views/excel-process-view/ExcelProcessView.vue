@@ -314,14 +314,14 @@ function handleJsonImportCancel() {
       </div>
       <div class="flex items-center gap-2">
         <button
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-app-border bg-app-fill hover:bg-gradient-to-br hover:from-violet-500/10 hover:to-purple-500/10 hover:border-violet-500/50 hover:text-violet-400 transition-all cursor-pointer text-app-text-regular"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-violet-500/50 bg-violet-500/10 hover:bg-violet-500/20 hover:border-violet-400 hover:text-violet-400 text-violet-400 transition-all cursor-pointer"
           @click="handleGoToJsonProcess"
         >
           <FileJson :size="14" />
           进入JSON处理
         </button>
         <button
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-app-border bg-app-fill hover:bg-gradient-to-br hover:from-emerald-500/10 hover:to-teal-500/10 hover:border-emerald-500/50 hover:text-emerald-400 transition-all cursor-pointer text-app-text-regular"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 hover:border-emerald-400 hover:text-emerald-400 text-emerald-400 transition-all cursor-pointer"
           @click="handleAddFiles"
         >
           <Upload :size="14" />

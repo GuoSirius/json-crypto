@@ -236,7 +236,29 @@ async function handleDialogNext() {
     ElMessage.warning('请先上传 JSON 文件')
     return
   }
-  // 如果有现有数据，根据场景显示不同的确认对话框
+  // 检查处理页是否有数据
+  const processPageHasData = store.state.files.length > 0 || store.state.pasteText.trim().length > 0
+  // 如果处理页没有数据，直接进入，不需要用户确认
+  if (!processPageHasData) {
+    try {
+      const {addedCount, duplicateCount} = await store.addFiles(fileList.value)
+      if (addedCount > 0) {
+        ElMessage.success(`成功添加 ${addedCount} 个文件`)
+      }
+      if (duplicateCount > 0) {
+        ElMessage.warning(`过滤 ${duplicateCount} 个重复文件`)
+      }
+      if (addedCount === 0 && duplicateCount > 0) {
+        ElMessage.warning(`所有文件均已存在，过滤 ${duplicateCount} 个重复文件`)
+      }
+      showFileListDialog.value = false
+      router.push('/json/process')
+    } catch (error) {
+      ElMessage.error('文件上传失败，请重试')
+    }
+    return
+  }
+  // 处理页有数据时，根据场景显示不同的确认对话框
   if (hasExistingData.value) {
     if (processPageIsFileMode.value) {
       // 上传页是文件列表 + 处理页是文件列表：继续上传、增量带入、全量覆盖
