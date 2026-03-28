@@ -69,10 +69,13 @@ export function useTheme() {
     stopMediaListenerCleanup()
   }
 
+  const isDark = computed(() => resolvedTheme.value === 'dark')
+
   return {
     mode,
     resolvedTheme,
-    setMode,
+    isDark,
+    setTheme: setMode,
     init,
     dispose,
   }

@@ -30,7 +30,7 @@ describe('db', () => {
         return Promise.resolve({ put: mockDbPut, get: mockDbGet, delete: mockDbDelete })
       })
       await getDB()
-      expect(mockOpenDB).toHaveBeenCalledWith('json-crypto-db', 1, expect.objectContaining({
+      expect(mockOpenDB).toHaveBeenCalledWith('json-crypto-db', 2, expect.objectContaining({
         upgrade: expect.any(Function),
       }))
     })

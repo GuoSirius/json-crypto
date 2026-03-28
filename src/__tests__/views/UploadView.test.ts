@@ -11,6 +11,10 @@ vi.mock('element-plus', () => ({
     error: vi.fn(),
     info: vi.fn(),
   },
+  ElDialog: {
+    name: 'ElDialog',
+    template: '<div class="mock-dialog"><slot /></div>',
+  },
 }))
 
 vi.mock('lucide-vue-next', () => ({
@@ -94,20 +98,19 @@ describe('UploadView.vue', () => {
   })
 
   describe('Initialization', () => {
-    it('calls store reset and init on mount', async () => {
+    it('calls store init on mount', async () => {
       await mountView()
-      expect(mockStoreReset).toHaveBeenCalled()
       expect(mockStoreInit).toHaveBeenCalled()
     })
 
-    it('renders page title JSON Crypto', async () => {
+    it('renders page title', async () => {
       const wrapper = await mountView()
-      expect(wrapper.text()).toContain('JSON Crypto')
+      expect(wrapper.text()).toContain('JSON 上传')
     })
 
     it('renders subtitle text', async () => {
       const wrapper = await mountView()
-      expect(wrapper.text()).toContain('JSON 数据处理工具')
+      expect(wrapper.text()).toContain('上传 JSON 文件或粘贴文本')
     })
   })
 
@@ -222,9 +225,10 @@ describe('UploadView.vue', () => {
   })
 
   describe('Page layout', () => {
-    it('renders ThemeToggle component', async () => {
+    it('renders upload and paste tabs', async () => {
       const wrapper = await mountView()
-      expect(wrapper.find('.theme-toggle-stub').exists()).toBe(true)
+      expect(wrapper.text()).toContain('文件上传')
+      expect(wrapper.text()).toContain('文本粘贴')
     })
   })
 })

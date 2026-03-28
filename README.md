@@ -1,6 +1,6 @@
-# JSON Crypto - JSON 数据处理工具
+# JSON Crypto - 多功能文件处理工具
 
-基于 Vite + Vue 3 + TypeScript + Element Plus + UnoCSS + CryptoJS 构建的 JSON 数据处理工具，支持文件上传/粘贴、格式化、压缩、加密解密、批量处理和导出下载。
+基于 Vite + Vue 3 + TypeScript + Element Plus + UnoCSS + CryptoJS 构建的多功能文件处理工具，支持 JSON 加密解密处理和 Excel 工作表解析导出。
 
 ## 📋 环境要求
 
@@ -19,6 +19,16 @@
 - **智能模式检测**：自动识别加密数据，切换加密/解密模式
 - **加引号选项**：支持为加密结果添加外层引号
 
+### Excel 处理
+
+- **Excel 上传**：支持 .xlsx / .xls 格式文件拖拽上传
+- **文件去重**：基于文件名 + 内容哈希自动去重
+- **工作表解析**：自动解析 Excel 中的所有工作表
+- **格式转换**：每个工作表支持 JSON / CSV 两种导出格式
+- **名称编辑**：可自定义工作表下载名称，支持一键还原原始名称或使用 Excel 文件名
+- **数据编辑**：解析后的数据支持在线编辑修改
+- **错误处理**：解析失败时显示失败原因及原始数据
+
 ### 文件管理
 
 - **多文件支持**：同时上传和处理多个 JSON 文件
@@ -36,8 +46,13 @@
   - 下拉菜单选择：下载原始内容（编辑框中当前内容）
   - 下拉菜单选择：下载处理后内容
   - 下拉菜单选择：同时下载原始内容和处理后内容（自动分文件夹）
+- **工作表批量下载**：跨多个 Excel 选择工作表批量下载为 ZIP
+  - 按目录模式：按 Excel 文件名划分目录存放
+  - 平铺模式：直接平铺，重名自动加 Excel 文件名前缀
+- **全选/反选**：支持逐个选择、全选和反选工作表
 
 ### 用户体验
+- **侧边栏导航**：左侧可折叠侧边栏，默认纯图标，悬停展开文字，统一管理所有功能模块
 - **主题切换**：亮色 / 暗黑 / 跟随系统三种模式
 - **主题防闪烁**：页面加载前立即应用主题，避免白屏闪烁
 - **一键复制**：原数据和处理后数据均可复制到剪贴板
@@ -58,6 +73,7 @@
 | 状态管理 | Vue 3 Composition API (reactive) |
 | 数据持久化 | IndexedDB (idb) |
 | 文件处理 | JSZip + FileSaver |
+| Excel 解析 | SheetJS (xlsx) |
 | 图标库 | Lucide Vue Next |
 | 测试框架 | Vitest + @vue/test-utils + happy-dom |
 | Git Hooks | husky |
@@ -77,9 +93,10 @@ json-crypto/
 │   ├── _redirects              # Cloudflare Pages SPA 回退
 │   └── favicon.svg             # 网站图标
 ├── src/
-│   ├── __tests__/              # 测试文件（18 个文件，366 个用例）
+│   ├── __tests__/              # 测试文件（20 个文件，415+ 个用例）
 │   ├── assets/                 # 静态资源
 │   ├── components/             # Vue 组件
+│   │   ├── AppSidebar.vue      # 全局侧边栏导航
 │   │   ├── BatchAction.vue     # 批量处理 + ZIP 下载
 │   │   ├── CryptoConfig.vue    # 算法选择 + 模式切换 + 密钥输入
 │   │   ├── FileList.vue        # 文件列表（筛选 + 搜索）
@@ -87,25 +104,32 @@ json-crypto/
 │   │   ├── ThemeToggle.vue     # 主题切换按钮
 │   │   └── ToolBar.vue         # 格式化/压缩按钮
 │   ├── composables/
+│   │   ├── useSidebar.ts       # 侧边栏状态管理
 │   │   └── useTheme.ts         # 主题切换 composable
 │   ├── router/
-│   │   └── index.ts            # 路由配置 + 导航守卫
+│   │   └── index.ts            # 路由配置
 │   ├── stores/
-│   │   └── jsonStore.ts        # 全局状态管理 + 自动持久化
+│   │   ├── jsonStore.ts        # JSON 状态管理 + 自动持久化
+│   │   └── excelStore.ts       # Excel 状态管理 + 自动持久化
 │   ├── types/
 │   │   └── index.ts            # TypeScript 类型定义
 │   ├── utils/
 │   │   ├── crypto.ts           # 加密/解密封装（6 种算法）
 │   │   ├── db.ts               # IndexedDB 持久化
-│   │   ├── download.ts         # 文件下载 + ZIP 打包
+│   │   ├── download.ts         # 文件下载 + ZIP 打包 + 工作表下载
+│   │   ├── excel.ts            # Excel 解析（SheetJS 封装）
 │   │   ├── json.ts             # JSON 格式化/压缩/验证
 │   │   └── uuid.ts             # UUID v4 生成
 │   ├── views/
-│   │   ├── process-view/        # 处理页面文件夹
-│   │   │   └── ProcessView.vue # 处理页（集成所有功能）
-│   │   └── upload-view/         # 上传页面文件夹
-│   │       └── UploadView.vue  # 上传页（文件拖拽 + 文本粘贴）
-│   ├── App.vue                 # 根组件
+│   │   ├── excel-process-view/ # Excel 处理页面
+│   │   │   └── ExcelProcessView.vue
+│   │   ├── excel-upload-view/  # Excel 上传页面
+│   │   │   └── ExcelUploadView.vue
+│   │   ├── process-view/       # JSON 处理页面
+│   │   │   └── ProcessView.vue
+│   │   └── upload-view/        # JSON 上传页面
+│   │       └── UploadView.vue
+│   ├── App.vue                 # 根组件（侧边栏 + 内容区布局）
 │   ├── main.ts                 # 应用入口
 │   ├── style.css               # 全局主题样式（亮色/暗黑）
 │   └── vite-env.d.ts           # Vite 类型声明
@@ -194,10 +218,10 @@ pnpm run preview
 ### Git Hooks
 项目配置了 husky pre-commit hook，每次提交前自动运行：
 - `vue-tsc -b`（TypeScript 类型检查）
-- `vitest run`（366 个单元测试）
+- `vitest run`（406 个单元测试）
 
 ### 测试覆盖
-- **17 个测试文件**，**366 个测试用例**，全部通过
+- **19 个测试文件**，**406 个测试用例**，全部通过
 - 覆盖全部工具函数、状态管理、组件和视图页面
 - 总体覆盖率约 **98%**
 - 测试执行时间约 **8-14 秒**
@@ -497,7 +521,7 @@ GitHub Actions 触发
 - 批量处理和 ZIP 打包下载
 - 数据持久化到 IndexedDB
 - 主题切换（亮色/暗黑/跟随系统）
-- 完整的单元测试覆盖（366+ 测试用例）
+- 完整的单元测试覆盖（406+ 测试用例）
 
 ## 许可证
 

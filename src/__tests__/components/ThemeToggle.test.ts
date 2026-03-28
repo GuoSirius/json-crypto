@@ -3,16 +3,16 @@ import { mount } from '@vue/test-utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 
 // Use vi.hoisted to avoid hoisting issues
-const { mockSetMode, mockMode } = vi.hoisted(() => {
+const { mockSetTheme, mockMode } = vi.hoisted(() => {
   const mockMode = { value: 'dark' }
-  const mockSetMode = vi.fn()
-  return { mockMode, mockSetMode }
+  const mockSetTheme = vi.fn()
+  return { mockMode, mockSetTheme }
 })
 
 vi.mock('@/composables/useTheme', () => ({
   useTheme: () => ({
     mode: mockMode,
-    setMode: mockSetMode,
+    setTheme: mockSetTheme,
   }),
 }))
 
@@ -50,18 +50,18 @@ describe('ThemeToggle.vue', () => {
     expect(buttons[2].find('[data-icon="monitor"]').exists()).toBe(true)
   })
 
-  it('should call setMode with correct value when button is clicked', async () => {
+  it('should call setTheme with correct value when button is clicked', async () => {
     const wrapper = mount(ThemeToggle)
     const buttons = wrapper.findAll('button')
 
     await buttons[0].trigger('click')
-    expect(mockSetMode).toHaveBeenCalledWith('light')
+    expect(mockSetTheme).toHaveBeenCalledWith('light')
 
     await buttons[1].trigger('click')
-    expect(mockSetMode).toHaveBeenCalledWith('dark')
+    expect(mockSetTheme).toHaveBeenCalledWith('dark')
 
     await buttons[2].trigger('click')
-    expect(mockSetMode).toHaveBeenCalledWith('system')
+    expect(mockSetTheme).toHaveBeenCalledWith('system')
   })
 
   it('should render different buttons for active and inactive states based on mode', async () => {

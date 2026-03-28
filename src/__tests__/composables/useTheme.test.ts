@@ -20,10 +20,10 @@ describe('useTheme', () => {
     })
   })
 
-  it('should return mode and setMode', () => {
-    const { mode, setMode } = useTheme()
+  it('should return mode and setTheme', () => {
+    const { mode, setTheme } = useTheme()
     expect(typeof mode.value).toBe('string')
-    expect(typeof setMode).toBe('function')
+    expect(typeof setTheme).toBe('function')
   })
 
   it('should return resolvedTheme computed', () => {
@@ -40,18 +40,18 @@ describe('useTheme', () => {
   })
 
   it('should persist mode change to localStorage', () => {
-    const { setMode } = useTheme()
-    setMode('light')
+    const { setTheme } = useTheme()
+    setTheme('light')
     expect(localStorage.setItem).toHaveBeenCalledWith('json-crypto-theme', 'light')
-    setMode('dark')
+    setTheme('dark')
     expect(localStorage.setItem).toHaveBeenCalledWith('json-crypto-theme', 'dark')
-    setMode('system')
+    setTheme('system')
     expect(localStorage.setItem).toHaveBeenCalledWith('json-crypto-theme', 'system')
   })
 
-  it('should toggle dark class when calling init() after setMode', () => {
-    const { setMode, init } = useTheme()
-    setMode('light')
+  it('should toggle dark class when calling init() after setTheme', () => {
+    const { setTheme, init } = useTheme()
+    setTheme('light')
     init()
     // After init with light mode, dark class should be removed
     // Note: due to module-level watchEffect, changes propagate reactively
@@ -59,9 +59,9 @@ describe('useTheme', () => {
   })
 
   it('should resolve system mode based on matchMedia', () => {
-    const { setMode, resolvedTheme } = useTheme()
+    const { setTheme, resolvedTheme } = useTheme()
     // matchMedia mock returns matches: false → system resolves to light
-    setMode('system')
+    setTheme('system')
     expect(resolvedTheme.value).toBe('light')
   })
 
@@ -70,8 +70,8 @@ describe('useTheme', () => {
     // mock from beforeEach (matches: false) is already captured.
     // We can't easily override it mid-test. Verify it resolves to 'light'
     // when matchMedia says matches=false (the default from beforeEach).
-    const { setMode, resolvedTheme } = useTheme()
-    setMode('system')
+    const { setTheme, resolvedTheme } = useTheme()
+    setTheme('system')
     // Default matchMedia mock has matches: false → system resolves to light
     expect(resolvedTheme.value).toBe('light')
   })
@@ -142,8 +142,8 @@ describe('useTheme - Media Query Listener', () => {
   })
 
   it('should toggle DOM class when matchMedia change fires in system mode', () => {
-    const { setMode } = useTheme()
-    setMode('system')
+    const { setTheme } = useTheme()
+    setTheme('system')
 
     document.documentElement.classList.remove('dark')
 
@@ -175,8 +175,8 @@ describe('useTheme - Media Query Listener', () => {
   })
 
   it('should not toggle DOM class when not in system mode', () => {
-    const { setMode } = useTheme()
-    setMode('light')
+    const { setTheme } = useTheme()
+    setTheme('light')
 
     document.documentElement.classList.remove('dark')
 

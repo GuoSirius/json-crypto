@@ -1,34 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useJsonStore } from '../stores/jsonStore'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      redirect: '/upload',
+      redirect: '/json/upload',
     },
     {
-      path: '/upload',
-      name: 'Upload',
+      path: '/json/upload',
+      name: 'JsonUpload',
       component: () => import('../views/upload-view/UploadView.vue'),
     },
     {
-      path: '/process',
-      name: 'Process',
+      path: '/json/process',
+      name: 'JsonProcess',
       component: () => import('../views/process-view/ProcessView.vue'),
     },
+    {
+      path: '/excel/upload',
+      name: 'ExcelUpload',
+      component: () => import('../views/excel-upload-view/ExcelUploadView.vue'),
+    },
+    {
+      path: '/excel/process',
+      name: 'ExcelProcess',
+      component: () => import('../views/excel-process-view/ExcelProcessView.vue'),
+    },
   ],
-})
-
-// 全局前置守卫，确保 store 初始化完成后再导航
-router.beforeEach(async (to, from, next) => {
-  // 如果目标页面需要数据，先确保 store 初始化完成
-  if (to.path === '/process') {
-    const store = useJsonStore()
-    await store.init()
-  }
-  next()
 })
 
 export default router

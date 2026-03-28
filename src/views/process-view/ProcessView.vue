@@ -15,7 +15,6 @@ import JsonEditor from '@/components/JsonEditor.vue'
 import ToolBar from '@/components/ToolBar.vue'
 import CryptoConfig from '@/components/CryptoConfig.vue'
 import BatchAction from '@/components/BatchAction.vue'
-import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -47,7 +46,7 @@ onMounted(async () => {
     // 等待 store 初始化完成，确保数据已从 IndexedDB 恢复
     await store.init()
     if (!store.hasData()) {
-      router.replace('/upload')
+      router.replace('/json/upload')
       return
     }
     loadCurrentFile()
@@ -55,7 +54,7 @@ onMounted(async () => {
     handleUrlParam()
   } catch (error) {
     console.error('ProcessView mounted error:', error)
-    router.replace('/upload')
+    router.replace('/json/upload')
   }
 })
 
@@ -577,7 +576,7 @@ async function handleBack() {
       { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' }
     )
     await store.reset()
-    router.replace('/upload')
+    router.replace('/json/upload')
   } catch {
     // User cancelled
   }
@@ -587,40 +586,32 @@ async function handleBack() {
 <template>
   <div class="min-h-screen bg-app-bg flex flex-col">
     <!-- Top Bar -->
-    <header class="fixed top-0 left-0 right-0 z-50 h-18 bg-gradient-to-r from-app-card to-app-bg border-b border-app-border flex items-center justify-between px-6">
-      <div class="flex items-center gap-4">
+    <header class="sticky top-0 z-30 h-14 bg-app-card/80 backdrop-blur-xl border-b border-app-border flex items-center justify-between px-4">
+      <div class="flex items-center gap-3">
         <button
-          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-blue-300 bg-gradient-to-br from-blue-400 to-purple-600 text-white hover:from-blue-500 hover:to-purple-700 hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer dark:border-blue-400 dark:from-blue-500 dark:to-purple-500"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-app-border bg-app-fill hover:bg-gradient-to-br hover:from-blue-500/10 hover:to-purple-500/10 hover:border-blue-500/50 hover:text-blue-400 transition-all cursor-pointer text-app-text-regular"
           @click="handleBack"
         >
-          <ArrowLeft :size="18" />
+          <ArrowLeft :size="14" />
           返回
         </button>
-        <div class="h-6 w-px bg-app-border"></div>
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <FileJson :size="18" class="text-white" />
-          </div>
-          <span class="text-lg font-bold text-app-text-primary" style="font-family: 'JetBrains Mono', monospace">JSON Crypto</span>
-        </div>
+        <div class="h-5 w-px bg-app-border"></div>
+        <span class="text-sm font-bold text-app-text-primary" style="font-family: 'JetBrains Mono', monospace">JSON 处理</span>
       </div>
 
-      <div class="flex items-center gap-4">
-        <CryptoConfig
-          :algorithm="store.state.cryptoConfig.algorithm"
-          :secret-key="store.state.cryptoConfig.key"
-          :mode="store.state.cryptoConfig.mode"
-          @update:algorithm="store.state.cryptoConfig.algorithm = $event"
-          @update:secret-key="store.state.cryptoConfig.key = $event"
-          @update:mode="store.state.cryptoConfig.mode = $event"
-        />
-        <ThemeToggle />
-      </div>
+      <CryptoConfig
+        :algorithm="store.state.cryptoConfig.algorithm"
+        :secret-key="store.state.cryptoConfig.key"
+        :mode="store.state.cryptoConfig.mode"
+        @update:algorithm="store.state.cryptoConfig.algorithm = $event"
+        @update:secret-key="store.state.cryptoConfig.key = $event"
+        @update:mode="store.state.cryptoConfig.mode = $event"
+      />
     </header>
 
     <!-- Main Content -->
-    <div class="flex-1 pt-18 flex">
-      <!-- Sidebar -->
+    <div class="flex-1 flex min-h-0">
+      <!-- File Sidebar -->
       <aside v-if="store.isFileMode()" class="w-60 shrink-0 border-r border-app-border bg-app-card overflow-hidden">
         <FileList
           :files="store.state.files"

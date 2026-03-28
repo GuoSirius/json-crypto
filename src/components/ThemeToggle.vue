@@ -2,7 +2,7 @@
 import { Monitor, Moon, Sun } from 'lucide-vue-next'
 import { useTheme, type ThemeMode } from '../composables/useTheme'
 
-const { mode, setMode } = useTheme()
+const { mode, setTheme } = useTheme()
 
 const options: { value: ThemeMode; label: string; icon: typeof Monitor }[] = [
   { value: 'light', label: '亮色', icon: Sun },
@@ -21,7 +21,7 @@ const options: { value: ThemeMode; label: string; icon: typeof Monitor }[] = [
         ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/40 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]'
         : 'bg-transparent text-app-text-regular hover:bg-gradient-to-br hover:from-blue-500/10 hover:to-purple-500/10 hover:text-blue-400 hover:shadow-md hover:shadow-blue-500/20 hover:-translate-y-0.5'"
       :title="opt.label"
-      @click="setMode(opt.value)"
+      @click="setTheme(opt.value)"
     >
       <component :is="opt.icon" :size="14" />
     </button>

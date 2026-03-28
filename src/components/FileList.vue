@@ -145,6 +145,14 @@ function clearSearch() {
         <div class="flex-1 min-w-0">
           <p class="text-xs font-medium text-app-text-primary truncate" :title="file.name">{{ file.name }}</p>
         </div>
+        <!-- 来源标签 -->
+        <span
+          v-if="file.source === 'excel-import'"
+          class="text-[9px] px-1 py-0.5 rounded bg-violet-500/20 text-violet-400 border border-violet-500/30 shrink-0"
+          title="来自Excel带入"
+        >
+          Excel
+        </span>
         <Check v-if="file.status === 'done'" :size="12" class="text-green-400 shrink-0" />
         <AlertCircle v-else-if="file.status === 'error'" :size="12" class="text-red-400 shrink-0" />
       </div>

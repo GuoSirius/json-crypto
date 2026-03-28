@@ -5,7 +5,8 @@ export interface JsonFile {
   md5: string
   processed: string
   status: 'pending' | 'done' | 'error'
-  editedContent?: string // 用户编辑后的原始内容，优先于 content 显示
+  editedContent?: string
+  source?: 'upload' | 'excel-import'
 }
 
 export type CryptoAlgorithm = 'AES' | 'DES' | 'TripleDES' | 'RC4' | 'Rabbit' | 'Base64'
@@ -28,3 +29,34 @@ export interface StoreData {
   filter?: 'all' | 'pending-encrypt' | 'pending-decrypt' | 'unencrypted' | 'undecrypted'
   searchKeyword?: string
 }
+
+// ========== Excel 相关类型 ==========
+
+export type SheetFormat = 'json' | 'csv'
+
+export interface SheetData {
+  id: string
+  originalName: string
+  displayName: string
+  format: SheetFormat
+  rawData: string
+  parsedData: string
+  parseError: string | null
+  selected: boolean
+}
+
+export interface ExcelFile {
+  id: string
+  name: string
+  contentHash: string
+  sheets: SheetData[]
+  activeSheetIndex: number
+}
+
+export interface ExcelStoreData {
+  files: ExcelFile[]
+  activeFileIndex: number
+  searchKeyword: string
+}
+
+export type BatchDownloadMode = 'grouped' | 'flat'

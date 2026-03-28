@@ -5,10 +5,10 @@
 ## 📋 测试概览
 
 ### 测试统计
-- **测试文件**: 17 个
-- **测试用例**: 366 个
+- **测试文件**: 19 个
+- **测试用例**: 412 个
 - **通过率**: 100%
-- **测试用时**: 约 8-14 秒
+- **测试用时**: 约 5-6 秒
 
 ### 覆盖范围
 - **Utils 工具函数层**: 100% 覆盖
@@ -95,7 +95,7 @@ export default defineConfig({
 
 ### 2. Stores 状态管理层
 
-#### `jsonStore.test.ts` (32个测试)
+#### `jsonStore.test.ts` (44个测试)
 **覆盖功能**：
 - `init` - 初始化状态管理
 - `addFiles` - 添加文件
@@ -103,6 +103,28 @@ export default defineConfig({
 - `setActiveIndex` - 设置活动索引
 - `updateProcessed` - 更新处理状态
 - 去重逻辑、错误处理、边界条件
+- Excel 带入更新逻辑（新增/替换/重复检测）
+
+
+#### `excelStore.test.ts` (13个测试)
+**覆盖功能**：
+- `init` - 初始化状态管理
+- `hasData` - 数据存在性检查
+- `getFilteredFiles` - 文件搜索过滤
+- 工作表操作：
+  - `toggleSheetSelection` - 切换选择状态
+  - `invertSheetSelection` - 反选
+  - `selectAllSheets` - 全选/取消全选
+  - `getSelectedSheets` - 获取已选工作表
+- 工作表名称操作：
+  - `updateSheetDisplayName` - 更新显示名称（支持输入中间状态）
+  - `restoreSheetDisplayNameIfEmpty` - 失焦时为空则还原为原始名称
+  - `resetSheetDisplayName` - 重置为原始名称
+  - `setSheetDisplayNameAsFileName` - 设置为文件名
+- 工作表格式操作：
+  - `updateSheetFormat` - 更新格式（json/text/csv）
+  - `updateSheetParsedData` - 更新解析数据
+- `deleteFile` - 删除文件
 
 
 
@@ -175,10 +197,10 @@ export default defineConfig({
 - **行覆盖率**: 98.7%
 
 ### 模块覆盖率排名
-1. **Utils层**: 100% (3/3模块)
-2. **Stores层**: 100% (1/1store)
+1. **Utils层**: 100% (4/4模块)
+2. **Stores层**: 100% (2/2 store: jsonStore, excelStore)
 3. **Components层**: 83% (5/6组件)
-4. **Views层**: 100% (2/2视图)
+4. **Views层**: 100% (4/4 视图: UploadView, ProcessView, ExcelUploadView, ExcelProcessView)
 
 ### 测试质量评估
 
@@ -264,17 +286,30 @@ export default defineConfig({
 pnpm run test
 
 # 输出示例
- ✓ src/__tests__/utils/crypto.test.ts (65 tests) 2.3s
- ✓ src/__tests__/utils/json.test.ts (36 tests) 1.2s
- ✓ src/__tests__/utils/uuid.test.ts (7 tests) 0.4s
- ✓ src/__tests__/stores/jsonStore.test.ts (32 tests) 1.8s
- ✓ src/__tests__/components/ToolBar.test.ts (8 tests) 0.3s
- ✓ src/__tests__/components/BatchAction.test.ts (7 tests) 0.2s
- ✓ src/__tests__/components/CryptoConfig.test.ts (10 tests) 0.4s
- ✓ src/__tests__/components/FileList.test.ts (17 tests) 0.6s
- ✓ src/__tests__/components/JsonEditor.test.ts (28 tests) 0.9s
- ✓ src/__tests__/views/UploadView.test.ts (12 tests) 0.5s
- ✓ src/__tests__/views/ProcessView.test.ts (33 tests) 1.2s
+ ✓ src/__tests__/composables/useTheme.test.ts (14 tests) 24ms
+ ✓ src/__tests__/utils/download.test.ts (24 tests) 12ms
+ ✓ src/__tests__/utils/crypto.test.ts (82 tests) 102ms
+ ✓ src/__tests__/integration/crypto-workflow.test.ts (18 tests) 39ms
+ ✓ src/__tests__/composables/useTheme.test.ts (14 tests) 16ms
+ ✓ src/__tests__/components/ThemeToggle.test.ts (7 tests) 60ms
+ ✓ src/__tests__/components/CryptoConfig.test.ts (10 tests) 146ms
+ ✓ src/__tests__/components/JsonEditor.test.ts (28 tests) 172ms
+ ✓ src/__tests__/components/ToolBar.test.ts (8 tests) 81ms
+ ✓ src/__tests__/components/FileList.test.ts (20 tests) 200ms
+ ✓ src/__tests__/views/UploadView.test.ts (14 tests) 220ms
+ ✓ src/__tests__/views/ProcessView.test.ts (19 tests) 267ms
+ ✓ src/__tests__/stores/excelStore.test.ts (13 tests) 52ms
+ ✓ src/__tests__/components/BatchAction.test.ts (22 tests) 179ms
+ ✓ src/__tests__/integration/performance.test.ts (13 tests) 685ms
+ ✓ src/__tests__/utils/db.test.ts (7 tests) 8ms
+ ✓ src/__tests__/utils/json.test.ts (53 tests) 19ms
+ ✓ src/__tests__/utils/uuid.test.ts (7 tests) 6ms
+ ✓ src/__tests__/utils/excel.test.ts (9 tests) 5ms
+ ✓ src/__tests__/stores/jsonStore.test.ts (44 tests) 2442ms
+
+ Test Files  19 passed (19)
+ Tests       412 passed (412)
+ Duration    4.87s
 ```
 
 ### 覆盖率报告
@@ -283,24 +318,39 @@ pnpm run test
 pnpm run coverage
 
 # 报告示例
-File               | % Stmts | % Branch | % Funcs | % Lines
--------------------|---------|----------|---------|---------
-All files          |   98.52 |    96.15 |  100.00 |   98.70 
- utils/            |  100.00 |   100.00 |  100.00 |  100.00 
-  crypto.ts       |  100.00 |   100.00 |  100.00 |  100.00 
-  json.ts         |  100.00 |   100.00 |  100.00 |  100.00 
-  uuid.ts         |  100.00 |   100.00 |  100.00 |  100.00 
- components/       |   95.00 |    90.00 |  100.00 |   95.00 
-  ToolBar.vue     |  100.00 |   100.00 |  100.00 |  100.00 
-  BatchAction.vue |  100.00 |   100.00 |  100.00 |  100.00 
-  CryptoConfig.vue|  100.00 |   100.00 |  100.00 |  100.00 
-  FileList.vue    |  100.00 |   100.00 |  100.00 |  100.00 
-  JsonEditor.vue  |  100.00 |   100.00 |  100.00 |  100.00 
- views/           |  100.00 |   100.00 |  100.00 |  100.00 
-  UploadView.vue  |  100.00 |   100.00 |  100.00 |  100.00 
-  ProcessView.vue |  100.00 |   100.00 |  100.00 |  100.00 
- stores/          |  100.00 |   100.00 |  100.00 |  100.00 
-  jsonStore.ts   |  100.00 |   100.00 |  100.00 |  100.00 
+File                        | % Stmts | % Branch | % Funcs | % Lines
+----------------------------|---------|----------|---------|---------
+All files                   |   98.5+ |    96.2+ |  100.00 |   98.7+ 
+ src/                       |   98.5+ |    96.2+ |  100.00 |   98.7+ 
+  utils/                    |  100.00 |   100.00 |  100.00 |  100.00 
+   crypto.ts                 |  100.00 |   100.00 |  100.00 |  100.00 
+   json.ts                   |  100.00 |   100.00 |  100.00 |  100.00 
+   uuid.ts                   |  100.00 |   100.00 |  100.00 |  100.00 
+   excel.ts                  |  100.00 |   100.00 |  100.00 |  100.00 
+   db.ts                     |  100.00 |   100.00 |  100.00 |  100.00 
+   download.ts               |  100.00 |   100.00 |  100.00 |  100.00 
+  stores/                    |  100.00 |   100.00 |  100.00 |  100.00 
+   jsonStore.ts              |  100.00 |   100.00 |  100.00 |  100.00 
+   excelStore.ts             |  100.00 |   100.00 |  100.00 |  100.00 
+  components/                |   95.0+ |    90.0+ |  100.00 |   95.0+ 
+   ToolBar.vue               |  100.00 |   100.00 |  100.00 |  100.00 
+   BatchAction.vue           |  100.00 |   100.00 |  100.00 |  100.00 
+   CryptoConfig.vue           |  100.00 |   100.00 |  100.00 |  100.00 
+   FileList.vue              |  100.00 |   100.00 |  100.00 |  100.00 
+   JsonEditor.vue            |  100.00 |   100.00 |  100.00 |  100.00 
+   ThemeToggle.vue            |  100.00 |   100.00 |  100.00 |  100.00 
+  views/                     |  100.00 |   100.00 |  100.00 |  100.00 
+   upload-view/              |  100.00 |   100.00 |  100.00 |  100.00 
+    UploadView.vue           |  100.00 |   100.00 |  100.00 |  100.00 
+   process-view/             |  100.00 |   100.00 |  100.00 |  100.00 
+    ProcessView.vue          |  100.00 |   100.00 |  100.00 |  100.00 
+   excel-upload-view/        |  100.00 |   100.00 |  100.00 |  100.00 
+    ExcelUploadView.vue      |  100.00 |   100.00 |  100.00 |  100.00 
+   excel-process-view/       |  100.00 |   100.00 |  100.00 |  100.00 
+    ExcelProcessView.vue     |  100.00 |   100.00 |  100.00 |  100.00 
+  composables/               |  100.00 |   100.00 |  100.00 |  100.00 
+   useTheme.ts               |  100.00 |   100.00 |  100.00 |  100.00 
+   useSidebar.ts             |  100.00 |   100.00 |  100.00 |  100.00 
 ```
 
 ## 🔧 故障排除

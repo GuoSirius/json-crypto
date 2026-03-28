@@ -172,12 +172,12 @@ async function createTestRouter() {
   router = createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: '/', redirect: '/process' },
-      { path: '/upload', component: { template: '<div>upload</div>' } },
-      { path: '/process', component: ProcessView },
+      { path: '/', redirect: '/json/process' },
+      { path: '/json/upload', component: { template: '<div>upload</div>' } },
+      { path: '/json/process', component: ProcessView },
     ],
   })
-  router.push('/process')
+  router.push('/json/process')
   await router.isReady()
   return router
 }
@@ -194,7 +194,7 @@ describe('ProcessView.vue', () => {
       const r = await createTestRouter()
       mount(ProcessView, { global: { plugins: [r] } })
       await flushPromises()
-      expect(r.currentRoute.value.path).toBe('/upload')
+      expect(r.currentRoute.value.path).toBe('/json/upload')
     })
 
     it('shows page content when store has paste data', async () => {
@@ -203,7 +203,7 @@ describe('ProcessView.vue', () => {
       const r = await createTestRouter()
       const wrapper = mount(ProcessView, { global: { plugins: [r] } })
       await flushPromises()
-      expect(wrapper.text()).toContain('JSON Crypto')
+      expect(wrapper.text()).toContain('JSON 处理')
     })
 
     it('renders back button', async () => {
@@ -223,12 +223,12 @@ describe('ProcessView.vue', () => {
       expect(wrapper.find('.crypto-config-stub').exists()).toBe(true)
     })
 
-    it('renders ThemeToggle component', async () => {
+    it('renders back button', async () => {
       mockStoreHasData.mockReturnValue(true)
       const r = await createTestRouter()
       const wrapper = mount(ProcessView, { global: { plugins: [r] } })
       await flushPromises()
-      expect(wrapper.find('.theme-toggle-stub').exists()).toBe(true)
+      expect(wrapper.text()).toContain('返回')
     })
   })
 
@@ -376,11 +376,11 @@ describe('ProcessView.vue', () => {
       const r = createRouter({
         history: createMemoryHistory(),
         routes: [
-          { path: '/process', component: ProcessView },
-          { path: '/upload', component: { template: '<div>upload</div>' } },
+          { path: '/json/process', component: ProcessView },
+          { path: '/json/upload', component: { template: '<div>upload</div>' } },
         ],
       })
-      r.push('/process?file=target.json')
+      r.push('/json/process?file=target.json')
       await r.isReady()
       mount(ProcessView, { global: { plugins: [r] } })
       await flushPromises()
@@ -397,11 +397,11 @@ describe('ProcessView.vue', () => {
       const r = createRouter({
         history: createMemoryHistory(),
         routes: [
-          { path: '/process', component: ProcessView },
-          { path: '/upload', component: { template: '<div>upload</div>' } },
+          { path: '/json/process', component: ProcessView },
+          { path: '/json/upload', component: { template: '<div>upload</div>' } },
         ],
       })
-      r.push('/process?file=1')
+      r.push('/json/process?file=1')
       await r.isReady()
       mount(ProcessView, { global: { plugins: [r] } })
       await flushPromises()

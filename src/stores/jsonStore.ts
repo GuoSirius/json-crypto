@@ -50,6 +50,7 @@ export function useJsonStore() {
         processed: file.processed,
         status: file.status,
         editedContent: file.editedContent,
+        source: file.source,
       })),
       activeIndex: state.activeIndex,
       pasteText: state.pasteText,
@@ -64,15 +65,23 @@ export function useJsonStore() {
     }
   }
 
-  async function addFiles(fileList: File[]): Promise<{addedCount: number; duplicateCount: number; duplicateNames: string[]}> {
+  async function addFiles(fileList: File[], source: 'upload' | 'excel-import' = 'upload'): Promise<{addedCount: number; duplicateCount: number; duplicateNames: string[]; updatedCount: number}> {
     let addedCount = 0
     let duplicateCount = 0
+    let updatedCount = 0
     const duplicateNames: string[] = []
     
     // 获取已有文件信息，用于去重
-    const existingFiles = new Map<string, string>()
+    // 文件上传：文件名+MD5去重；Excel带入：文件名去重（相同文件名则替换内容）；不同来源之间不比较
+    const uploadFiles = new Map<string, string>() // upload来源的文件
+    const excelImportFiles = new Map<string, { md5: string; index: number }>() // excel-import来源的文件名 -> {md5, index}
+    
     for (const f of state.files) {
-      existingFiles.set(f.name, f.md5)
+      if (f.source === 'excel-import') {
+        excelImportFiles.set(f.name, { md5: f.md5, index: state.files.indexOf(f) })
+      } else {
+        uploadFiles.set(f.name, f.md5)
+      }
     }
     
     for (const file of fileList) {
@@ -87,9 +96,43 @@ export function useJsonStore() {
         // 计算 MD5
         md5 = calculateMD5(content)
         
-        // 检查是否已存在（文件名相同且 MD5 相同）
-        const existingMD5 = existingFiles.get(file.name)
-        if (existingMD5 === md5) {
+        let isDuplicate = false
+        
+        if (source === 'upload') {
+          // 文件上传：只和upload来源比较（文件名+MD5），不和Excel带入比较
+          const existingMD5 = uploadFiles.get(file.name)
+          if (existingMD5 === md5) {
+            isDuplicate = true
+          }
+        } else {
+          // Excel带入：检查文件名是否已存在
+          const existing = excelImportFiles.get(file.name)
+          if (existing) {
+            // 文件名已存在，检查MD5是否相同
+            if (existing.md5 === md5) {
+              // 完全相同，视为重复
+              isDuplicate = true
+            } else {
+              // 文件名相同但MD5不同，这是内容更新，需要替换
+              // 更新现有文件的内容
+              const targetFile = state.files[existing.index]
+              if (targetFile) {
+                targetFile.content = content
+                targetFile.md5 = md5
+                // 清除编辑状态，使用新内容
+                if (targetFile.editedContent !== undefined) {
+                  delete targetFile.editedContent
+                }
+                updatedCount++
+                // 更新去重映射中的MD5
+                excelImportFiles.set(file.name, { md5, index: existing.index })
+              }
+              continue
+            }
+          }
+        }
+        
+        if (isDuplicate) {
           duplicateCount++
           duplicateNames.push(file.name)
           continue
@@ -102,9 +145,16 @@ export function useJsonStore() {
           md5,
           processed: '',
           status: 'pending' as const,
+          source,
         }
         state.files.push(fileData)
-        existingFiles.set(file.name, md5)
+        
+        // 更新去重映射
+        if (source === 'excel-import') {
+          excelImportFiles.set(file.name, { md5, index: state.files.length - 1 })
+        } else {
+          uploadFiles.set(file.name, md5)
+        }
         addedCount++
       } catch (error) {
         state.files.push({
@@ -114,12 +164,16 @@ export function useJsonStore() {
           md5: '',
           processed: '',
           status: 'error' as const,
+          source,
         })
-        existingFiles.set(file.name, '')
+        
+        if (source === 'excel-import') {
+          excelImportFiles.set(file.name, { md5: '', index: state.files.length - 1 })
+        }
         addedCount++
       }
     }
-    return {addedCount, duplicateCount, duplicateNames}
+    return {addedCount, duplicateCount, duplicateNames, updatedCount}
   }
 
   function readFileAsText(file: File): Promise<string> {
