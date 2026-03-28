@@ -3,19 +3,19 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, FileJson } from 'lucide-vue-next'
-import { useJsonStore } from '../stores/jsonStore'
-import { formatJson, compressJson, isValidJson } from '../utils/json'
-import { processCrypto, detectEncrypted, removeOuterQuotes, calculateMD5 } from '../utils/crypto'
-import { downloadFile, downloadAsZip } from '../utils/download'
-import type { CryptoMode, CryptoAlgorithm, DownloadMode } from '../types'
-import { cleanData } from '../utils/crypto'
+import { useJsonStore } from '@/stores/jsonStore'
+import { formatJson, compressJson, isValidJson } from '@/utils/json'
+import { processCrypto, detectEncrypted, removeOuterQuotes, calculateMD5 } from '@/utils/crypto'
+import { downloadFile, downloadAsZip } from '@/utils/download'
+import type { CryptoMode, DownloadMode } from '@/types'
+import { cleanData } from '@/utils/crypto'
 
-import FileList from '../components/FileList.vue'
-import JsonEditor from '../components/JsonEditor.vue'
-import ToolBar from '../components/ToolBar.vue'
-import CryptoConfig from '../components/CryptoConfig.vue'
-import BatchAction from '../components/BatchAction.vue'
-import ThemeToggle from '../components/ThemeToggle.vue'
+import FileList from '@/components/FileList.vue'
+import JsonEditor from '@/components/JsonEditor.vue'
+import ToolBar from '@/components/ToolBar.vue'
+import CryptoConfig from '@/components/CryptoConfig.vue'
+import BatchAction from '@/components/BatchAction.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -25,12 +25,13 @@ const sourceText = ref('')
 const processedText = ref('')
 const batchLoading = ref(false)
 const batchProgress = ref(0)
+const currentFileKey = ref('') // 当前文件的唯一标识（用于追踪编辑）
+
+// 用于跟踪原始内容是否被用户编辑过
+const isSourceEdited = ref(false)
 
 const hasSource = computed(() => !!sourceText.value.trim())
 const hasProcessed = computed(() => !!processedText.value.trim())
-// 基础验证：直接检查是否是有效 JSON
-const hasSourceValidJson = computed(() => isValidJson(sourceText.value))
-const hasProcessedValidJson = computed(() => isValidJson(processedText.value))
 // 增强验证：去除引号后检查是否是有效 JSON（用于格式化和压缩按钮的禁用判断）
 const hasSourceValidJsonOrWithQuotes = computed(() => {
   const cleanText = removeOuterQuotes(sourceText.value)
@@ -58,16 +59,34 @@ onMounted(async () => {
   }
 })
 
+// 监听 sourceText 的变化，自动保存到 store
+watch(sourceText, (newValue, oldValue) => {
+  if (store.isFileMode() && newValue !== oldValue && currentFileKey.value) {
+    const file = store.state.files[store.state.activeIndex]
+    if (file && file.editedContent !== newValue) {
+      file.editedContent = newValue
+      // 触发数据持久化
+      store.persist()
+    }
+  }
+}, { deep: true })
+
 function loadCurrentFile() {
   if (store.isFileMode()) {
     const file = store.state.files[store.state.activeIndex]
     if (file) {
-      sourceText.value = file.content
-      processedText.value = file.processed
+      // 更新当前文件唯一标识
+      currentFileKey.value = file.id
+      // 如果有编辑后的内容（editedContent），优先使用；否则使用原始内容
+      sourceText.value = file.editedContent || file.content
+      processedText.value = file.processed || ''
+      isSourceEdited.value = !!file.editedContent
     }
   } else {
+    currentFileKey.value = ''
     sourceText.value = store.state.pasteText
     processedText.value = ''
+    isSourceEdited.value = false
   }
 }
 
@@ -100,7 +119,7 @@ function handleFileSelect(md5: string) {
   }
 }
 
-function handleFilterChange(filter: import('../stores/jsonStore').FileFilter) {
+function handleFilterChange(filter: import('@/stores/jsonStore').FileFilter) {
   store.setFilter(filter)
   // 切换筛选后选中第一个文件
   const filteredFiles = store.getFilteredFiles()
@@ -139,7 +158,13 @@ function handleRefresh() {
   if (store.isFileMode()) {
     const file = store.state.files[store.state.activeIndex]
     if (file) {
+      // 清除编辑后的内容
+      if (file.editedContent) {
+        delete file.editedContent
+      }
       sourceText.value = file.content
+      // 触发数据持久化
+      store.persist()
       ElMessage.success('已还原为原始文件数据')
     }
   } else {
@@ -345,15 +370,24 @@ function handleDownloadZip(mode: DownloadMode = 'processed') {
     return
   }
 
-  // 收集当前编辑框中的内容（可能被用户修改过）
+  // 收集原始内容（优先使用 editedContent，其次是当前编辑框内容，最后是原始 content）
   const filteredIndexes = store.getFilteredIndexes()
   const sourceContents = filteredIndexes.map(index => {
-    // 如果是当前选中的文件，使用编辑框中的内容（可能被修改过）
+    const file = store.state.files[index]
+    if (!file) return ''
+
+    // 优先使用 editedContent（用户编辑后的内容）
+    if (file.editedContent) {
+      return file.editedContent
+    }
+
+    // 如果是当前选中的文件，使用编辑框中的内容（可能刚修改但还未持久化）
     if (index === store.state.activeIndex) {
       return sourceText.value
     }
-    // 否则使用存储的原始内容
-    return store.state.files[index]?.content || ''
+
+    // 最后使用原始 content
+    return file.content
   })
 
   const cryptoType = store.state.cryptoConfig.mode === 'encrypt' ? '_encrypt' : '_decrypt'

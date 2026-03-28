@@ -101,8 +101,10 @@ json-crypto/
 │   │   ├── json.ts             # JSON 格式化/压缩/验证
 │   │   └── uuid.ts             # UUID v4 生成
 │   ├── views/
-│   │   ├── ProcessView.vue     # 处理页（集成所有功能）
-│   │   └── UploadView.vue      # 上传页（文件拖拽 + 文本粘贴）
+│   │   ├── process-view/        # 处理页面文件夹
+│   │   │   └── ProcessView.vue # 处理页（集成所有功能）
+│   │   └── upload-view/         # 上传页面文件夹
+│   │       └── UploadView.vue  # 上传页（文件拖拽 + 文本粘贴）
 │   ├── App.vue                 # 根组件
 │   ├── main.ts                 # 应用入口
 │   ├── style.css               # 全局主题样式（亮色/暗黑）

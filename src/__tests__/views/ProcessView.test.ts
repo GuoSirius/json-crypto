@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import ProcessView from '@/views/ProcessView.vue'
+import ProcessView from '@/views/process-view/ProcessView.vue'
 
 // Use vi.hoisted to make state accessible from vi.mock factory
 const { mockStoreState, mockStoreInit, mockStoreHasData, mockStoreIsFileMode,
   mockStoreSetActiveIndex, mockStoreUpdateProcessed, mockStoreSetFilter,
   mockStoreSetSearchKeyword, mockStoreGetFilteredFiles, mockStoreGetFilteredIndexes,
-  mockStoreDetectAndSetCryptoMode, mockStoreReset } = vi.hoisted(() => {
+  mockStoreDetectAndSetCryptoMode, mockStoreReset, mockStorePersist } = vi.hoisted(() => {
   const state: any = {
     files: [],
     activeIndex: 0,
@@ -29,6 +29,7 @@ const { mockStoreState, mockStoreInit, mockStoreHasData, mockStoreIsFileMode,
     mockStoreGetFilteredIndexes: vi.fn(() => []),
     mockStoreDetectAndSetCryptoMode: vi.fn(),
     mockStoreReset: vi.fn(() => Promise.resolve()),
+    mockStorePersist: vi.fn(() => Promise.resolve()),
   }
 })
 
@@ -144,6 +145,7 @@ vi.mock('@/stores/jsonStore', () => ({
     getFilteredIndexes: mockStoreGetFilteredIndexes,
     detectAndSetCryptoMode: mockStoreDetectAndSetCryptoMode,
     reset: mockStoreReset,
+    persist: mockStorePersist,
   }),
 }))
 

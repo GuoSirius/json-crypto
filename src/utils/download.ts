@@ -22,6 +22,7 @@ export async function downloadAsZip(
       const file = files[i]
       const originalName = file.name
       const processedName = file.name.replace(/\.json$/i, '') + suffix + '.json'
+      // 优先使用 sourceContents[i]（编辑框中的内容），其次使用 file.content
       originalFolder?.file(originalName, sourceContents[i] || file.content)
       processedFolder?.file(processedName, file.processed)
     }

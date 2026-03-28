@@ -11,12 +11,12 @@ const router = createRouter({
     {
       path: '/upload',
       name: 'Upload',
-      component: () => import('../views/UploadView.vue'),
+      component: () => import('../views/upload-view/UploadView.vue'),
     },
     {
       path: '/process',
       name: 'Process',
-      component: () => import('../views/ProcessView.vue'),
+      component: () => import('../views/process-view/ProcessView.vue'),
     },
   ],
 })

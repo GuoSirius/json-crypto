@@ -49,6 +49,7 @@ export function useJsonStore() {
         md5: file.md5,
         processed: file.processed,
         status: file.status,
+        editedContent: file.editedContent,
       })),
       activeIndex: state.activeIndex,
       pasteText: state.pasteText,

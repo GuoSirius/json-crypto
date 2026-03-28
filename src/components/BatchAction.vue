@@ -45,14 +45,14 @@ function handleClickOutside(event: MouseEvent) {
 
 <template>
   <div class="flex items-center gap-2" @click="handleClickOutside">
-    <label class="flex items-center gap-1.5 cursor-pointer group">
+    <label class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-app-fill border-2 border-app-border/50 hover:border-primary/60 hover:bg-app-fill-strong group cursor-pointer transition-all duration-300">
       <input
         type="checkbox"
         :checked="wrapWithQuotes"
         @change="(e) => { emit('update:wrapWithQuotes', (e.target as HTMLInputElement).checked) }"
-        class="w-4 h-4 rounded bg-app-fill border-2 border-app-border text-primary focus:ring-2 focus:ring-primary/30 cursor-pointer transition-all hover:border-primary/50 accent-primary"
+        class="w-4 h-4 rounded border-2 border-app-border/70 bg-app-fill text-primary focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-app-fill transition-all duration-200 accent-primary cursor-pointer checked:bg-primary checked:border-primary"
       />
-      <span class="text-xs font-medium text-app-text-regular group-hover:text-app-text-primary transition-colors">加引号</span>
+      <span class="text-xs font-semibold text-app-text-regular group-hover:text-app-text-primary group-hover:font-bold transition-all duration-300 select-none">加引号</span>
     </label>
     <button
       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-violet-400 bg-gradient-to-br from-violet-500 to-violet-600 text-white hover:from-violet-600 hover:to-violet-700 hover:shadow-xl hover:shadow-violet-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import UploadView from '@/views/UploadView.vue'
+import UploadView from '@/views/upload-view/UploadView.vue'
 
 // Mock dependencies
 vi.mock('element-plus', () => ({

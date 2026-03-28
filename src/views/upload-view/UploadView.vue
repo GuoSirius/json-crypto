@@ -3,10 +3,10 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Upload, FileText, ArrowRight, FileJson, ListX, Trash2 } from 'lucide-vue-next'
-import { useJsonStore } from '../stores/jsonStore'
-import { isValidJson } from '../utils/json'
-import { calculateMD5 } from '../utils/crypto'
-import ThemeToggle from '../components/ThemeToggle.vue'
+import { useJsonStore } from '@/stores/jsonStore'
+import { isValidJson } from '@/utils/json'
+import { calculateMD5 } from '@/utils/crypto'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const store = useJsonStore()

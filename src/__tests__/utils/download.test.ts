@@ -60,6 +60,24 @@ describe('download', () => {
       const blob = mockSaveAs.mock.calls[0][0] as Blob
       expect(blob).toBeInstanceOf(Blob)
     })
+
+    it('should handle special characters in content', () => {
+      const content = '{"test":"\\n\\t\\r"}'
+      downloadFile(content, 'special.json')
+      expect(mockSaveAs).toHaveBeenCalledOnce()
+      const blob = mockSaveAs.mock.calls[0][0] as Blob
+      expect(blob).toBeInstanceOf(Blob)
+    })
+
+    it('should handle large JSON content', () => {
+      const largeObj = { data: 'x'.repeat(10000) }
+      const content = JSON.stringify(largeObj)
+      downloadFile(content, 'large.json')
+      expect(mockSaveAs).toHaveBeenCalledOnce()
+      const blob = mockSaveAs.mock.calls[0][0] as Blob
+      expect(blob).toBeInstanceOf(Blob)
+      expect(blob.size).toBeGreaterThan(10000)
+    })
   })
 
   describe('downloadAsZip', () => {
@@ -108,6 +126,32 @@ describe('download', () => {
       expect(mockZipFile).toHaveBeenCalledWith('data.json', '{"fallback":1}')
     })
 
+    it('should prioritize sourceContents over file.content when both exist', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'data.json', content: '{"original":1}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+      ]
+      const sourceContents = ['{"edited":2}']
+      await downloadAsZip(files, sourceContents, 'original')
+      expect(mockZipFile).toHaveBeenCalledTimes(1)
+      expect(mockZipFile).toHaveBeenCalledWith('data.json', '{"edited":2}')
+    })
+
+    it('should handle mixed sourceContents (some edited, some original)', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'data1.json', content: '{"original":1}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+        { id: '2', name: 'data2.json', content: '{"original":2}', md5: 'm2', processed: '{"b":2}', status: 'done' },
+        { id: '3', name: 'data3.json', content: '{"original":3}', md5: 'm3', processed: '{"c":3}', status: 'done' },
+      ]
+      const sourceContents = ['{"edited":1}', '', '{"edited":3}']
+      await downloadAsZip(files, sourceContents, 'original')
+      expect(mockZipFile).toHaveBeenCalledTimes(3)
+      expect(mockZipFile).toHaveBeenCalledWith('data1.json', '{"edited":1}')
+      expect(mockZipFile).toHaveBeenCalledWith('data2.json', '{"original":2}')
+      expect(mockZipFile).toHaveBeenCalledWith('data3.json', '{"edited":3}')
+    })
+
     it('should create folders in both mode', async () => {
       mockGenerateAsync.mockResolvedValue(new Blob())
       const files: JsonFile[] = [
@@ -118,6 +162,17 @@ describe('download', () => {
       expect(mockFolder).toHaveBeenCalledTimes(2)
       expect(mockFolder).toHaveBeenCalledWith('original')
       expect(mockFolder).toHaveBeenCalledWith('processed')
+    })
+
+    it('should use sourceContents in both mode original folder', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'data.json', content: '{"original":1}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+      ]
+      const sourceContents = ['{"edited":1}']
+      await downloadAsZip(files, sourceContents, 'both', '_encrypt')
+      const folderMock = mockFolder.mock.results[0].value
+      expect(folderMock.file).toHaveBeenCalledWith('data.json', '{"edited":1}')
     })
 
     it('should use default suffix "_processed" when not specified in processed mode', async () => {
@@ -161,6 +216,26 @@ describe('download', () => {
       expect(mockZipFile).toHaveBeenCalledWith('data_enc.json', '{}')
     })
 
+    it('should handle uppercase .JSON extension', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'data.JSON', content: '{}', md5: 'm1', processed: '{}', status: 'done' },
+      ]
+      const sourceContents = ['{}']
+      await downloadAsZip(files, sourceContents, 'processed', '_enc')
+      expect(mockZipFile).toHaveBeenCalledWith('data_enc.json', '{}')
+    })
+
+    it('should handle mixed case .Json extension', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'data.Json', content: '{}', md5: 'm1', processed: '{}', status: 'done' },
+      ]
+      const sourceContents = ['{}']
+      await downloadAsZip(files, sourceContents, 'processed', '_enc')
+      expect(mockZipFile).toHaveBeenCalledWith('data_enc.json', '{}')
+    })
+
     it('should default to processed mode when mode is not specified', async () => {
       mockGenerateAsync.mockResolvedValue(new Blob())
       const files: JsonFile[] = [
@@ -170,6 +245,41 @@ describe('download', () => {
       await downloadAsZip(files, sourceContents)
       expect(mockZipFile).toHaveBeenCalledTimes(1)
       expect(mockZipFile).toHaveBeenCalledWith('data_processed.json', '{"a":1}')
+    })
+
+    it('should handle multiple files with different names', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'file1.json', content: '{}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+        { id: '2', name: 'file2.json', content: '{}', md5: 'm2', processed: '{"b":2}', status: 'done' },
+        { id: '3', name: 'file3.json', content: '{}', md5: 'm3', processed: '{"c":3}', status: 'done' },
+      ]
+      const sourceContents = ['{}', '{}', '{}']
+      await downloadAsZip(files, sourceContents, 'processed', '_test')
+      expect(mockZipFile).toHaveBeenCalledTimes(3)
+      expect(mockZipFile).toHaveBeenCalledWith('file1_test.json', '{"a":1}')
+      expect(mockZipFile).toHaveBeenCalledWith('file2_test.json', '{"b":2}')
+      expect(mockZipFile).toHaveBeenCalledWith('file3_test.json', '{"c":3}')
+    })
+
+    it('should preserve original filename in original mode', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: 'my-data-file.json', content: '{}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+      ]
+      const sourceContents = ['{}']
+      await downloadAsZip(files, sourceContents, 'original')
+      expect(mockZipFile).toHaveBeenCalledWith('my-data-file.json', '{}')
+    })
+
+    it('should handle files with special characters in names', async () => {
+      mockGenerateAsync.mockResolvedValue(new Blob())
+      const files: JsonFile[] = [
+        { id: '1', name: '数据_文件.json', content: '{}', md5: 'm1', processed: '{"a":1}', status: 'done' },
+      ]
+      const sourceContents = ['{}']
+      await downloadAsZip(files, sourceContents, 'original')
+      expect(mockZipFile).toHaveBeenCalledWith('数据_文件.json', '{}')
     })
   })
 })

@@ -5,6 +5,7 @@ export interface JsonFile {
   md5: string
   processed: string
   status: 'pending' | 'done' | 'error'
+  editedContent?: string // 用户编辑后的原始内容，优先于 content 显示
 }
 
 export type CryptoAlgorithm = 'AES' | 'DES' | 'TripleDES' | 'RC4' | 'Rabbit' | 'Base64'

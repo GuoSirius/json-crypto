@@ -37,6 +37,33 @@ describe('BatchAction.vue', () => {
     expect(wrapper.text()).toContain('加引号')
   })
 
+  it('checkbox has correct styling classes', () => {
+    const wrapper = createWrapper()
+    const checkbox = wrapper.find('input[type="checkbox"]')
+    expect(checkbox.attributes('class')).toContain('w-4')
+    expect(checkbox.attributes('class')).toContain('h-4')
+    expect(checkbox.attributes('class')).toContain('rounded')
+    expect(checkbox.attributes('class')).toContain('border-2')
+  })
+
+  it('checkbox label has proper styling and hover effects', () => {
+    const wrapper = createWrapper()
+    const label = wrapper.find('label')
+    expect(label.classes()).toContain('px-3')
+    expect(label.classes()).toContain('py-1.5')
+    expect(label.classes()).toContain('rounded-lg')
+    expect(label.classes()).toContain('group')
+    expect(label.classes()).toContain('cursor-pointer')
+  })
+
+  it('checkbox text has font-weight transition on hover', () => {
+    const wrapper = createWrapper()
+    const span = wrapper.find('label span')
+    expect(span.classes()).toContain('text-xs')
+    expect(span.classes()).toContain('font-semibold')
+    expect(span.classes()).toContain('transition-all')
+  })
+
   it('disables batch process button when filteredCount is 0', () => {
     const wrapper = createWrapper({ filteredCount: 0 })
     const batchBtn = wrapper.findAll('button')[0]
@@ -87,6 +114,14 @@ describe('BatchAction.vue', () => {
     expect(wrapper.emitted('update:wrapWithQuotes')![0]).toEqual([true])
   })
 
+  it('emits update:wrapWithQuotes with false when checkbox is unchecked', async () => {
+    const wrapper = createWrapper({ wrapWithQuotes: true })
+    const checkbox = wrapper.find('input[type="checkbox"]')
+    await checkbox.setValue(false)
+    expect(wrapper.emitted('update:wrapWithQuotes')).toHaveLength(1)
+    expect(wrapper.emitted('update:wrapWithQuotes')![0]).toEqual([false])
+  })
+
   it('emits batchProcess when batch button is clicked', async () => {
     const wrapper = createWrapper({ filteredCount: 3 })
     await wrapper.findAll('button')[0].trigger('click')
@@ -127,5 +162,52 @@ describe('BatchAction.vue', () => {
     wrapper.vm.$emit('downloadZipWithMode', 'both')
     expect(wrapper.emitted('downloadZipWithMode')).toHaveLength(3)
     expect(wrapper.emitted('downloadZipWithMode')![2]).toEqual(['both'])
+  })
+
+  it('dropdown menu shows when filteredCount >= 2 and showDropdown is true', async () => {
+    const wrapper = createWrapper({ filteredCount: 3 })
+    const vm = wrapper.vm as any
+    vm.showDropdown = true
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.dropdown-menu').exists()).toBe(true)
+  })
+
+  it('dropdown menu does not show when filteredCount < 2', async () => {
+    const wrapper = createWrapper({ filteredCount: 1 })
+    const vm = wrapper.vm as any
+    vm.showDropdown = true
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.dropdown-menu').exists()).toBe(false)
+  })
+
+  it('dropdown menu contains three options', async () => {
+    const wrapper = createWrapper({ filteredCount: 3 })
+    const vm = wrapper.vm as any
+    vm.showDropdown = true
+    await wrapper.vm.$nextTick()
+    const dropdownItems = wrapper.findAll('.dropdown-item')
+    expect(dropdownItems).toHaveLength(3)
+    expect(dropdownItems[0].text()).toContain('下载原始内容')
+    expect(dropdownItems[1].text()).toContain('下载处理后内容')
+    expect(dropdownItems[2].text()).toContain('同时下载两种内容')
+  })
+
+  it('has proper button styling classes', () => {
+    const wrapper = createWrapper({ filteredCount: 3 })
+    const batchBtn = wrapper.findAll('button')[0]
+    expect(batchBtn.classes()).toContain('flex')
+    expect(batchBtn.classes()).toContain('gap-1.5')
+    expect(batchBtn.classes()).toContain('px-3')
+    expect(batchBtn.classes()).toContain('py-1.5')
+    expect(batchBtn.classes()).toContain('rounded-lg')
+    expect(batchBtn.classes()).toContain('border-violet-400')
+  })
+
+  it('download button group has proper structure', () => {
+    const wrapper = createWrapper({ filteredCount: 3 })
+    const buttonGroup = wrapper.find('.download-button-group')
+    expect(buttonGroup.exists()).toBe(true)
+    expect(buttonGroup.classes()).toContain('relative')
+    expect(buttonGroup.find('.button-row').exists()).toBe(true)
   })
 })
