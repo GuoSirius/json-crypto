@@ -5,7 +5,7 @@ import UnoCSS from 'unocss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-  base: process.env.VITE_BASE || '/',
+  base: '/json-crypto/',
   plugins: [vue(), UnoCSS()],
   resolve: {
     alias: {
