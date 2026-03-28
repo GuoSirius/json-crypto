@@ -589,7 +589,7 @@ async function handleBack() {
     <header class="sticky top-0 z-30 h-14 bg-app-card/80 backdrop-blur-xl border-b border-app-border flex items-center justify-between px-4">
       <div class="flex items-center gap-3">
         <button
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-app-border bg-app-fill hover:bg-gradient-to-br hover:from-blue-500/10 hover:to-purple-500/10 hover:border-blue-500/50 hover:text-blue-400 transition-all cursor-pointer text-app-text-regular"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-500/50 bg-blue-500/10 hover:bg-blue-500/20 hover:border-blue-400 hover:text-blue-400 text-blue-400 transition-all cursor-pointer"
           @click="handleBack"
         >
           <ArrowLeft :size="14" />
