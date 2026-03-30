@@ -97,8 +97,8 @@ describe('download', () => {
         { id: '1', name: 'data.json', content: '{"original":1}', md5: 'm1', processed: '{"a":1}', status: 'done' },
         { id: '2', name: 'config.json', content: '{"original":2}', md5: 'm2', processed: '{"b":2}', status: 'done' },
       ]
-      const sourceContents = ['{"original":1}', '{"original":2}']
-      await downloadAsZip(files, sourceContents, 'processed', '_encrypt')
+      // 对于 processed 模式，不提供 sourceContents，让函数使用 file.processed
+      await downloadAsZip(files, [], 'processed', '_encrypt')
       expect(mockZipFile).toHaveBeenCalledTimes(2)
       expect(mockZipFile).toHaveBeenCalledWith('data_encrypt.json', '{"a":1}')
       expect(mockZipFile).toHaveBeenCalledWith('config_encrypt.json', '{"b":2}')
@@ -241,8 +241,8 @@ describe('download', () => {
       const files: JsonFile[] = [
         { id: '1', name: 'data.json', content: '{"original":1}', md5: 'm1', processed: '{"a":1}', status: 'done' },
       ]
-      const sourceContents = ['{"modified":1}']
-      await downloadAsZip(files, sourceContents)
+      // 对于 processed 模式，不提供 sourceContents，让函数使用 file.processed
+      await downloadAsZip(files, [])
       expect(mockZipFile).toHaveBeenCalledTimes(1)
       expect(mockZipFile).toHaveBeenCalledWith('data_processed.json', '{"a":1}')
     })
@@ -254,8 +254,8 @@ describe('download', () => {
         { id: '2', name: 'file2.json', content: '{}', md5: 'm2', processed: '{"b":2}', status: 'done' },
         { id: '3', name: 'file3.json', content: '{}', md5: 'm3', processed: '{"c":3}', status: 'done' },
       ]
-      const sourceContents = ['{}', '{}', '{}']
-      await downloadAsZip(files, sourceContents, 'processed', '_test')
+      // 对于 processed 模式，不提供 sourceContents，让函数使用 file.processed
+      await downloadAsZip(files, [], 'processed', '_test')
       expect(mockZipFile).toHaveBeenCalledTimes(3)
       expect(mockZipFile).toHaveBeenCalledWith('file1_test.json', '{"a":1}')
       expect(mockZipFile).toHaveBeenCalledWith('file2_test.json', '{"b":2}')
