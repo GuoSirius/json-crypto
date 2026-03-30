@@ -6,6 +6,7 @@ export interface JsonFile {
   processed: string
   status: 'pending' | 'done' | 'error'
   editedContent?: string
+  editedProcessed?: string
   source?: 'upload' | 'excel-import'
 }
 

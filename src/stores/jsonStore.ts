@@ -50,6 +50,7 @@ export function useJsonStore() {
         processed: file.processed,
         status: file.status,
         editedContent: file.editedContent,
+        editedProcessed: file.editedProcessed,
         source: file.source,
       })),
       activeIndex: state.activeIndex,
