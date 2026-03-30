@@ -85,7 +85,12 @@ export function useSidebar() {
 
   function toggle() {
     collapsed.value = !collapsed.value
-    localStorage.setItem(SIDEBAR_KEY, String(collapsed.value))
+    try {
+      localStorage.setItem(SIDEBAR_KEY, String(collapsed.value))
+    } catch (error) {
+      console.error('Failed to save sidebar state to localStorage:', error)
+      // 继续执行，不中断应用
+    }
   }
 
   function setHovering(val: boolean) {
@@ -96,13 +101,23 @@ export function useSidebar() {
   function expand() {
     if (collapsed.value) {
       collapsed.value = false
-      localStorage.setItem(SIDEBAR_KEY, 'false')
+      try {
+        localStorage.setItem(SIDEBAR_KEY, 'false')
+      } catch (error) {
+        console.error('Failed to save sidebar state to localStorage:', error)
+        // 继续执行，不中断应用
+      }
     }
   }
 
   function setTheme(mode: ThemeMode) {
     themeMode.value = mode
-    localStorage.setItem(THEME_KEY, mode)
+    try {
+      localStorage.setItem(THEME_KEY, mode)
+    } catch (error) {
+      console.error('Failed to save theme to localStorage:', error)
+      // 继续执行，不中断应用
+    }
     applyTheme(mode)
   }
 

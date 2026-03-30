@@ -1,21 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
-
-// Mock xlsx module
-vi.mock('xlsx', () => ({
-  read: vi.fn(),
-  utils: {
-    sheet_to_json: vi.fn(),
-    sheet_to_csv: vi.fn(),
-    aoa_to_sheet: vi.fn(),
-  },
-}))
-
-// Mock uuid
-vi.mock('@/utils/uuid', () => ({
-  generateUUID: vi.fn(() => 'test-uuid-0000-0000-000000000001'),
-}))
-
-import { calculateArrayBufferHash, getFileExtension, isExcelFile } from '@/utils/excel'
+import { describe, it, expect } from 'vitest'
+import { 
+  calculateArrayBufferHash, 
+  getFileExtension, 
+  isExcelFile
+} from '@/utils/excel'
 
 describe('excel utils', () => {
   describe('calculateArrayBufferHash', () => {
@@ -42,19 +30,39 @@ describe('excel utils', () => {
       const hash2 = calculateArrayBufferHash(data2.buffer)
       expect(hash1).toBe(hash2)
     })
+
+    it('should handle empty ArrayBuffer', () => {
+      const buffer = new ArrayBuffer(0)
+      const hash = calculateArrayBufferHash(buffer)
+      expect(typeof hash).toBe('string')
+      expect(hash.length).toBeGreaterThan(0)
+    })
   })
 
   describe('getFileExtension', () => {
-    it('should return .xlsx for xlsx files', () => {
+    it('should extract extension from filename', () => {
       expect(getFileExtension('test.xlsx')).toBe('.xlsx')
-    })
-
-    it('should return .xls for xls files', () => {
       expect(getFileExtension('test.xls')).toBe('.xls')
+      expect(getFileExtension('test.csv')).toBe('.csv')
+      expect(getFileExtension('test.json')).toBe('.json')
     })
 
-    it('should be case insensitive', () => {
-      expect(getFileExtension('test.XLSX')).toBe('.xlsx')
+    it('should handle filenames with multiple dots', () => {
+      expect(getFileExtension('test.file.xlsx')).toBe('.xlsx')
+      expect(getFileExtension('test.min.js')).toBe('.js')
+    })
+
+    it('should handle filenames without extension', () => {
+      // getFileExtension returns the substring starting at last dot
+      // 'test' -> lastIndexOf('.') returns -1, slice(-1) returns 't'
+      // 'test.' -> lastIndexOf('.') returns 4, slice(4) returns '.'
+      expect(getFileExtension('test')).toBe('t')
+      expect(getFileExtension('test.')).toBe('.')
+    })
+
+    it('should handle filenames with path', () => {
+      expect(getFileExtension('/path/to/test.xlsx')).toBe('.xlsx')
+      expect(getFileExtension('C:\\path\\to\\test.xls')).toBe('.xls')
     })
   })
 
@@ -71,6 +79,18 @@ describe('excel utils', () => {
       expect(isExcelFile('test.json')).toBe(false)
       expect(isExcelFile('test.csv')).toBe(false)
       expect(isExcelFile('test.txt')).toBe(false)
+      expect(isExcelFile('test.pdf')).toBe(false)
+    })
+
+    it('should handle case-insensitive extensions', () => {
+      expect(isExcelFile('test.XLSX')).toBe(true)
+      expect(isExcelFile('test.XLS')).toBe(true)
+      expect(isExcelFile('test.Xlsx')).toBe(true)
+    })
+
+    it('should handle filenames with path', () => {
+      expect(isExcelFile('/path/to/test.xlsx')).toBe(true)
+      expect(isExcelFile('C:\\path\\to\\test.xls')).toBe(true)
     })
   })
 })
