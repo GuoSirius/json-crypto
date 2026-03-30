@@ -169,11 +169,18 @@ describe('JsonEditor.vue', () => {
     expect(wrapper.text()).toContain('下载')
   })
 
-  it('emits refresh when 还原 button is clicked', async () => {
-    const wrapper = createWrapper({ readonly: false })
+  it('emits refresh when 还原 button is clicked for non-processed data', async () => {
+    const wrapper = createWrapper({ readonly: false, label: '原数据' })
     const refreshBtn = wrapper.findAll('button').find(b => b.text().includes('还原'))
     await refreshBtn!.trigger('click')
     expect(wrapper.emitted('refresh')).toHaveLength(1)
+  })
+
+  it('emits restore when 还原 button is clicked for processed data', async () => {
+    const wrapper = createWrapper({ readonly: false, label: '处理后数据' })
+    const restoreBtn = wrapper.findAll('button').find(b => b.text().includes('还原'))
+    await restoreBtn!.trigger('click')
+    expect(wrapper.emitted('restore')).toHaveLength(1)
   })
 
   it('emits encrypt when 加密 button is clicked', async () => {

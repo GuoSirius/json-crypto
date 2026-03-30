@@ -47,7 +47,7 @@ describe('AppSidebar.vue', () => {
     expect(wrapper.find('nav').exists()).toBe(true)
     
     // 应该包含主题切换按钮
-    expect(wrapper.find('.theme-toggle').exists()).toBe(true)
+    expect(wrapper.find('.theme-button').exists()).toBe(true)
   })
 
   it('renders navigation items correctly', async () => {
@@ -58,7 +58,7 @@ describe('AppSidebar.vue', () => {
     })
 
     // 应该包含所有导航项
-    const navItems = wrapper.findAll('.nav-item')
+    const navItems = wrapper.findAll('.menu-item')
     expect(navItems.length).toBe(4)
     
     // 检查导航项文本（当侧边栏展开时）
@@ -83,11 +83,13 @@ describe('AppSidebar.vue', () => {
     await wrapper.vm.$nextTick()
     
     // 找到处理页面的导航项
-    const processNavItem = wrapper.find('.nav-item[href="/process"]')
-    expect(processNavItem.exists()).toBe(true)
+    // 注意：AppSidebar 使用 button 元素，没有 href 属性
+    const processNavItems = wrapper.findAll('.menu-item')
+    const processNavItem = processNavItems.find(item => item.text().includes('JSON处理'))
+    expect(processNavItem?.exists()).toBe(true)
     
     // 应该应用 active 类
-    expect(processNavItem.classes()).toContain('active')
+    expect(processNavItem?.classes()).toContain('menu-item-active')
   })
 
   it('toggles sidebar when toggle button is clicked', async () => {
