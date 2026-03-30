@@ -10,6 +10,7 @@ const props = defineProps<{
   readonly?: boolean
   mode?: CryptoMode
   hasSource?: boolean
+  showClearButton?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -19,6 +20,7 @@ const emit = defineEmits<{
   'refresh': []
   'encrypt': []
   'decrypt': []
+  'restore': []
 }>()
 
 const copied = ref(false)
@@ -51,6 +53,10 @@ function handleRefresh() {
   emit('refresh')
 }
 
+function handleRestore() {
+  emit('restore')
+}
+
 function handleEncrypt() {
   emit('encrypt')
 }
@@ -70,9 +76,17 @@ function handleInput(e: Event) {
       <span class="text-xs font-bold text-app-text-regular uppercase tracking-wide">{{ label }}</span>
       <div class="flex items-center gap-1.5">
         <button
-          v-if="!readonly"
+          v-if="!readonly && label !== '处理后数据'"
           class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-orange-400 bg-gradient-to-br from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 hover:shadow-md hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
           @click="handleRefresh"
+        >
+          <RotateCcw :size="12" />
+          还原
+        </button>
+        <button
+          v-if="!readonly && label === '处理后数据'"
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-amber-400 bg-gradient-to-br from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          @click="handleRestore"
         >
           <RotateCcw :size="12" />
           还原
@@ -96,19 +110,19 @@ function handleInput(e: Event) {
           解密
         </button>
         <button
-          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-indigo-400 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 hover:shadow-md hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-          @click="handleDownload"
-        >
-          <Download :size="12" />
-          下载
-        </button>
-        <button
-          v-if="readonly && modelValue"
+          v-if="(readonly || showClearButton) && modelValue"
           class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-red-400 bg-gradient-to-br from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:shadow-md hover:shadow-red-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
           @click="handleClear"
         >
           <Trash2 :size="12" />
           清空
+        </button>
+        <button
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-indigo-400 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white hover:from-indigo-600 hover:to-indigo-700 hover:shadow-md hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+          @click="handleDownload"
+        >
+          <Download :size="12" />
+          下载
         </button>
         <button
           class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-teal-400 bg-gradient-to-br from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 hover:shadow-md hover:shadow-teal-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"

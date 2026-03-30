@@ -9,7 +9,7 @@ export function downloadFile(content: string, filename: string, mimeType = 'appl
 
 export async function downloadAsZip(
   files: JsonFile[],
-  sourceContents: string[],
+  contents: string[],
   mode: DownloadMode = 'processed',
   suffix = '_processed'
 ) {
@@ -22,15 +22,13 @@ export async function downloadAsZip(
       const file = files[i]
       const originalName = file.name
       const processedName = file.name.replace(/\.json$/i, '') + suffix + '.json'
-      originalFolder?.file(originalName, sourceContents[i] || file.content)
-      processedFolder?.file(processedName, file.processed)
+      originalFolder?.file(originalName, contents[i] || file.content)
+      processedFolder?.file(processedName, file.processed || '')
     }
   } else {
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
-      const content = mode === 'original'
-        ? (sourceContents[i] || file.content)
-        : file.processed
+      const content = contents[i] || (mode === 'original' ? file.content : file.processed || '')
       const name = mode === 'original'
         ? file.name
         : file.name.replace(/\.json$/i, '') + suffix + '.json'

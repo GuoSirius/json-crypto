@@ -11,12 +11,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:gh-pages": "vite build --base /$npm_package_name/",
+    "build:cloudflare": "vite build --base /",
     "preview": "vite preview",
     "type-check": "vue-tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postbuild": "bash scripts/fix-spa-routing.sh"
   },
   "dependencies": {
     "@unocss/preset-attributify": "^66.6.7",
