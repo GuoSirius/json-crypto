@@ -132,10 +132,9 @@ jobs:
       - name: Build for Cloudflare Pages
         run: |
           pnpm run build
-          echo "Copying functions for SPA routing..."
-          cp -r functions dist/
-          ls -la dist/
           echo "Build completed!"
+          ls -la dist/
+          ls -la functions/
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
