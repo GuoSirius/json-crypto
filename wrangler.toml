@@ -1,0 +1,7 @@
+name = "json-crypto"
+compatibility_date = "2025-04-01"
+
+# SPA 静态资产配置 - 所有未匹配的路由返回 index.html
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
