@@ -104,9 +104,9 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # ==================== 部署: Cloudflare Workers (SPA) ====================
-  deploy-cloudflare-workers:
-    name: Deploy to Cloudflare Workers (SPA)
+  # ==================== 部署: Cloudflare Pages ====================
+  deploy-cloudflare-pages:
+    name: Deploy to Cloudflare Pages
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -129,19 +129,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build for Cloudflare Workers
+      - name: Build for Cloudflare Pages
         run: |
           pnpm run build
           echo "Build completed!"
           ls -la dist/
-        env:
-          VITE_BASE: /
+          ls -la functions/
 
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+          command: pages deploy dist --project-name=json-crypto
 
 
