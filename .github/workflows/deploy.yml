@@ -132,11 +132,9 @@ jobs:
       - name: Build for Cloudflare Pages
         run: |
           pnpm run build
-          echo "Creating _redirects file..."
-          # Cloudflare Pages SPA 回退配置
-          # 注意: Cloudflare Pages 有 _redirects bug，需要使用 Functions 方式
-          printf '/* /index.html 200\n' > dist/_redirects
-          cat dist/_redirects
+          echo "Copying functions for SPA routing..."
+          cp -r functions dist/
+          ls -la dist/
           echo "Build completed!"
 
       - name: Deploy to Cloudflare Pages
