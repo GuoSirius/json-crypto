@@ -104,9 +104,9 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # ==================== 部署: Cloudflare Workers (SPA) ====================
-  deploy-cloudflare-workers:
-    name: Deploy to Cloudflare Workers (SPA)
+  # ==================== 部署: Cloudflare Pages ====================
+  deploy-cloudflare-pages:
+    name: Deploy to Cloudflare Pages
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -129,20 +129,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build for Cloudflare Workers
+      - name: Build for Cloudflare Pages
         run: |
           pnpm run build
+          echo "Creating _redirects file..."
+          # Cloudflare Pages SPA 回退配置
+          # 注意: Cloudflare Pages 有 _redirects bug，需要使用 Functions 方式
+          printf '/* /index.html 200\n' > dist/_redirects
+          cat dist/_redirects
           echo "Build completed!"
-          cat dist/index.html | head -20
-        env:
-          VITE_BASE: /
 
-      - name: Deploy to Cloudflare Workers (SPA)
+      - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-          newerVersionAvailableOutput: warning
+          command: pages deploy dist --project-name=json-crypto
 
 
