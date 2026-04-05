@@ -133,7 +133,9 @@ jobs:
         run: |
           pnpm run build
           echo "Build completed!"
-          ls -la dist/
+          cat dist/index.html | head -20
+        env:
+          VITE_BASE: /
 
       - name: Deploy to Cloudflare Workers (SPA)
         uses: cloudflare/wrangler-action@v3
