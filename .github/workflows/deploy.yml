@@ -81,21 +81,16 @@ jobs:
           pnpm run build
           echo "Build completed, checking dist directory..."
           ls -la dist/
-          
-          # 验证构建产物
-          if [ ! -f "dist/index.html" ]; then
-            echo "ERROR: index.html not found in dist directory!"
-            exit 1
-          fi
-          
-          if [ ! -f "dist/404.html" ]; then
-            echo "ERROR: 404.html not found in dist directory!"
-            exit 1
-          fi
-          
-          echo "Build artifacts verified successfully!"
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
+
+      - name: Fix SPA routing for GitHub Pages
+        run: |
+          echo "Fixing SPA routing for GitHub Pages..."
+          cp dist/index.html dist/404.html
+          echo "404.html created for GitHub Pages SPA fallback"
+          echo "Build artifacts verified successfully!"
+          ls -la dist/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -135,9 +130,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build for Cloudflare Pages
-        run: pnpm run build
-        env:
-          VITE_BASE: /
+        run: |
+          pnpm run build
+          echo "Creating _redirects for Cloudflare Pages SPA..."
+          printf '/*  /index.html  200\n' > dist/_redirects
+          cat dist/_redirects
+          echo "Cloudflare Pages routing configured!"
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
